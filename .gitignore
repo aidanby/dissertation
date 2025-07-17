@@ -2,6 +2,7 @@
 *.aux
 *.bbl
 *.blg
+*.brf
 *.idx
 *.ind
 *.lof
@@ -40,3 +41,6 @@
 
 # Brazil workspace files
 DissertationWorkspace/
+
+# Makefile (uncomment if you want to ignore it)
+Makefile

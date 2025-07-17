@@ -1,0 +1,5 @@
+# TeXcount configuration file
+%group cmds \begin \end
+%group envs acknowledgments abstract
+%group macros \newcommand \renewcommand \def
+%group ignore \documentclass \usepackage \input

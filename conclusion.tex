@@ -1,0 +1,52 @@
+\chapter{Conclusion}
+\label{sec:conclusion}
+
+This dissertation has explored the integration of Large Language Models (LLMs) with traditional program analysis techniques to address critical challenges in software evolution. Through a series of novel approaches and empirical evaluations, I have demonstrated that combining the strengths of LLMs with established software engineering methodologies yields superior results compared to either approach in isolation. My work spans multiple dimensions of software evolution, including fault localization, automated program repair, program transpilation, and security vulnerability detection.
+
+\section{Summary of Contributions}
+
+My first major contribution is the development of a bidirectional fine-tuning technique that enables LLMs to perform effective fault localization without relying on pre-written tests. By adapting traditionally left-to-right LLMs to understand code in a bidirectional manner, I demonstrated significant improvements in identifying faulty lines of code. This approach not only assists in debugging but also proves effective in detecting runtime security vulnerabilities, addressing a critical gap in existing fault localization techniques.
+
+My second contribution lies in the novel application of LLM entropy values to enhance automated program repair. I showed that LLM entropy—a measure of model uncertainty—can be leveraged to improve all three critical stages of program repair: fault localization, patch testing efficiency, and plausible patch ranking. My empirical results demonstrated that this hybrid approach outperforms both traditional APR techniques and pure LLM-based methods, achieving an 18\% higher precision in classifying plausible patches while remaining effective for patches produced by modern ML-based tools.
+
+My third contribution is VERT, a verified equivalent Rust transpilation framework that combines LLMs with verification harnesses to ensure functional equivalence between source and target code. This approach addresses the hallucination problem inherent in LLMs by incorporating formal verification techniques, resulting in transpiled code that is not only functionally correct but also more idiomatic than code produced by traditional transpilers. My evaluation on real-world repositories confirms that this approach strikes an optimal balance between correctness guarantees and code naturalness.
+
+My fourth contribution extends my fault localization work to security vulnerability detection through multi-task instruction-tuning of LLMs. By training models to simultaneously identify vulnerable code and explain exploitation vectors, I created a more comprehensive vulnerability detection system. My experiments demonstrate that this approach effectively detects vulnerabilities spanning multiple files across large repositories, addressing the limitations of line-level fault localization.
+
+Finally, my fifth contribution is NodeMedic, a hybrid approach that combines program analysis with LLMs for detecting exploitable vulnerabilities in Node.js packages. By integrating taint provenance tracking with graph neural networks and LLMs, I achieved superior detection performance compared to existing methods. My comprehensive evaluation shows that NodeMedic-GNN achieves an F1 score of 0.943, significantly outperforming traditional program analysis approaches and demonstrating the value of combining multiple techniques for vulnerability detection.
+
+\section{Key Insights and Implications}
+
+Several important insights emerge from my research:
+
+First, while LLMs excel at generating natural, human-like code, they fundamentally operate as black-box models with inherent limitations in understanding program semantics and correctness. My work demonstrates that these limitations can be mitigated by integrating LLMs with traditional program analysis techniques, creating systems that leverage the strengths of both approaches.
+
+Second, the entropy values produced by LLMs during generation provide valuable signals about model uncertainty, which can be harnessed for tasks beyond code generation. My research shows that these entropy values effectively identify potential fault locations and help prioritize candidate patches, offering a novel perspective on how LLM internals can inform software engineering tools.
+
+Third, the verification of LLM outputs is essential for critical software engineering tasks. My transpilation work demonstrates that combining LLM generation capabilities with formal verification techniques produces results that are both correct and natural, addressing a fundamental tension in automated code transformation.
+
+Fourth, multi-task learning enables LLMs to develop more nuanced understanding of software vulnerabilities by simultaneously learning to identify vulnerable code and explain exploitation vectors. This approach produces models that can reason about security implications across file boundaries, addressing limitations of traditional vulnerability detection methods.
+
+Finally, my research confirms that hybrid approaches combining neural and symbolic methods consistently outperform pure neural or pure symbolic approaches across various software evolution tasks. This finding has significant implications for the design of future software engineering tools, suggesting that the most effective systems will integrate multiple paradigms rather than relying exclusively on either traditional program analysis or deep learning.
+
+\section{Limitations and Future Work}
+
+Despite the advances presented in this dissertation, several limitations remain to be addressed in future work:
+
+The scalability of my approaches to very large codebases remains a challenge, particularly for tasks requiring whole-program analysis. Future work should explore techniques for efficiently applying these methods to industrial-scale software systems with millions of lines of code.
+
+While my transpilation work focused on Rust as a target language, extending these techniques to other language pairs would provide valuable insights into the generalizability of my approach. Additionally, exploring bidirectional transpilation (converting code back to its original language) could serve as an additional verification mechanism.
+
+My security vulnerability detection work currently focuses on specific vulnerability types in Node.js applications. Expanding this approach to cover a broader range of vulnerability classes and programming languages would increase its practical utility.
+
+The interpretability of hybrid neural-symbolic systems remains limited, making it difficult for developers to understand why certain code is flagged as vulnerable or why specific repairs are suggested. Future work should explore techniques for making these systems more transparent and explainable.
+
+Finally, as LLMs continue to evolve rapidly, investigating how my approaches can adapt to and leverage newer model architectures and capabilities will be essential for maintaining their effectiveness.
+
+\section{Concluding Remarks}
+
+This dissertation has demonstrated that software engineering is indeed an evolving process that benefits from a holistic understanding of software properties. By addressing the limitations of LLMs through integration with program analysis techniques, I have created effective tools for fault localization, automated program repair, program transpilation, and security vulnerability detection.
+
+My work contributes to a growing body of evidence suggesting that the future of software engineering tools lies not in replacing traditional techniques with deep learning, but in thoughtfully combining them to create systems that leverage the strengths of both approaches. As software systems continue to grow in complexity and importance, such hybrid approaches will be essential for maintaining software quality, security, and evolvability.
+
+The tools and techniques presented in this dissertation are open-source and available to the research community, providing a foundation for future work in this rapidly evolving field. I hope that my contributions will inspire further research into the integration of LLMs with traditional software engineering methodologies, ultimately leading to more powerful and practical tools for software evolution.

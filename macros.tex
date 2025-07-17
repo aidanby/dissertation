@@ -1,0 +1,205 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% General
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Comments
+% \newcommand{\notes}[1]{}
+% \newcommand{\TODO}[1]{}
+\newif\ifshownotes
+\shownotestrue
+%\shownotesfalse
+
+\ifshownotes
+\newcommand{\notes}[1]{{\small \textsf{\textcolor{red}{[#1]}}}}
+\newcommand{\TODO}[1]{\textcolor{red}{[TODO: #1]}}
+\newcommand{\todo}[1]{\TODO{#1}}
+\newcommand{\darion}[1]{\notes{Darion says: #1}}
+\newcommand{\limin}[1]{\notes{Limin says: #1}}
+\newcommand{\nuno}[1]{\notes{Nuno says: #1}}
+\newcommand{\ruben}[1]{\notes{Ruben says: #1}}
+\newcommand{\aidan}[1]{\notes{Aidan says: #1}}
+\newcommand{\kevin}[1]{\notes{Kevin says: #1}}
+\newcommand{\ronghao}[1]{\notes{Ronghao says: #1}}
+\newcommand{\mindy}[1]{\notes{Mindy says: #1}}
+\else
+\newcommand{\notes}[1]{}
+\newcommand{\TODO}[1]{}
+\newcommand{\todo}[1]{}
+\newcommand{\darion}[1]{}
+\newcommand{\limin}[1]{}
+\newcommand{\nuno}[1]{}
+\newcommand{\ruben}[1]{}
+\newcommand{\aidan}[1]{}
+\newcommand{\kevin}[1]{}
+\newcommand{\ronghao}[1]{}
+\newcommand{\mindy}[1]{}
+\fi
+
+
+
+%% Formatting
+\newcommand{\lilskip}{\vspace{.25\baselineskip}}
+
+%% Boxes
+\newcommand{\researchq}[2]{
+\lilskip
+\noindent\textbf{RQ#1}: #2
+\lilskip
+}
+\newcommand{\researchqinline}[2]{\textbf{RQ#1}: #2}
+\newcommand{\rqnum}[1]{\textbf{RQ#1}}
+
+\newcommand{\resultbox}[2]{
+\vspace{1mm}  \noindent\fbox{
+    \begin{minipage}{0.96\columnwidth}
+      \textbf{Result #1}: #2
+    \end{minipage}%
+  }%
+  \vspace{1mm}
+  }%
+
+\newcommand{\textbox}[1]{
+\vspace{1mm}  \noindent\fbox{
+    \begin{minipage}{0.96\columnwidth}
+      #1
+    \end{minipage}%
+  }%
+}%
+
+\newcommand{\headerbox}[2]{
+\vspace{1mm}  \noindent\fbox{
+    \begin{minipage}{0.96\columnwidth}
+      \textbf{#1}: #2
+    \end{minipage}%
+  }%
+}%
+
+\newcommand{\codebox}[1]{\vspace{0.15cm} \\ #1 \vspace{0.15cm} \\}
+
+
+%% References
+\newcommand{\secref}[1]{Section~\ref{#1}}
+\newcommand{\figref}[1]{Figure~\ref{#1}}
+\newcommand{\tabref}[1]{Table~\ref{#1}}
+\newcommand{\appref}[1]{Appendix~\ref{#1}}
+\newcommand{\defref}[1]{Definition~\ref{#1}}
+\newcommand{\algoref}[1]{Algorithm~\ref{#1}}
+\newcommand{\chapref}[1]{Chapter~\ref{#1}}
+
+%% Math
+\newcommand{\m}[1]{\mathtt{#1}}
+
+%% Theorem environments
+% \newtheorem{theorem}{Theorem}
+% \theoremstyle{plain}
+% \newtheorem{thm}{Theorem}
+% \newtheorem{lem}[thm]{Lemma}
+% \newtheorem{cor}[thm]{Corollary}
+% \newtheorem{defn}[thm]{Definition}
+% \newtheorem{assumption}[thm]{Assume}
+% \theoremstyle{definition}
+% \newtheorem{definition}{Definition}[section]
+% \newenvironment{proofsketch}{\noindent{\it Proof (sketch):}\hspace*{0.25em}}{ \hspace*{\fill} \qed}
+
+%% Symbols
+\makeatletter
+\newsavebox{\@brx}
+\newcommand{\llangle}[1][]{\savebox{\@brx}{\(\m@th{#1\langle}\)}%
+  \mathopen{\copy\@brx\kern-0.5\wd\@brx\usebox{\@brx}}}
+\newcommand{\rrangle}[1][]{\savebox{\@brx}{\(\m@th{#1\rangle}\)}%
+  \mathclose{\copy\@brx\kern-0.5\wd\@brx\usebox{\@brx}}}
+\makeatother
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% NodeMedic
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Acronyms
+\newacronym{aci}{ACI}{Arbitrary Command Injection}
+\newacronym{ace}{ACE}{Arbitrary Code Execution}
+\newacronym{llms}{LLMs}{Large Language Models}
+
+%% Project names
+\newcommand{\nodemedic}{\textsc{NodeMedic}\xspace}
+\newcommand{\nodemedicfine}{\textsc{NodeMedic-FINE}\xspace}
+\newcommand{\name}{\textsc{NodeMedic-LM}\xspace}
+\newcommand{\nameshort}{\textsc{NodeMedic-LM}\xspace}
+
+%% Component names
+\newcommand{\Enum}{Enumerator\xspace}
+
+%% Node.js names
+\newcommand{\nodejs}{{Node.js}\xspace}
+\newcommand{\npmpkg}[1]{\emph{#1}\xspace}
+\newcommand{\npm}{{npm}\xspace}
+
+% Responsible disclosure of package names
+% Comment for anonymization
+% \newcommand{\cleartext}[1]{\npmpkg{#1}}
+% \newcommand{\anontext}[1]{}
+% Comment for de-anonymization
+\newcommand{\cleartext}[1]{}
+\newcommand{\anontext}[1]{\npmpkg{#1}}
+\newcommand{\pkgname}[2]{\cleartext{#1}\anontext{#2}}
+
+%% Symbols
+\newcommand{\circled}[1]{\tikz[baseline=(char.base)]{\node[shape=circle,draw,inner sep=1.2pt] (char) {\scriptsize{#1}};}}
+
+%% Code
+%\lstinline[style=customjs]|exec|
+\newcommand{\sink}[1]{\js{#1}}
+
+%% Evaluation table circles
+\newcommand*\emptycirc[1][1ex]{\tikz\draw[thick] (0,0) circle (#1);}
+\newcommand*\halfcirc[1][1ex]{%
+  \begin{tikzpicture}
+  \draw[fill] (0,0)-- (90:#1) arc (90:270:#1) -- cycle ;
+  \draw[thick] (0,0) circle (#1);
+  \end{tikzpicture}}
+\DeclareRobustCommand*\fullcirc[1][1ex]{\tikz\fill (0,0) circle (#1);}
+
+%% space
+\renewcommand{\paragraph}[1]{\vspace{0pt}\noindent{\bf #1}}
+
+\usepackage{listings}
+\usepackage{xcolor}
+% \usepackage{inconsolata} % For a better monospaced font
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, shapes.geometric, positioning}
+
+% Define JavaScript language for listings
+\lstdefinelanguage{JavaScript}{
+    keywords={function, var, require, if, else, return, try, catch},
+    keywordstyle=\color{blue}\bfseries,
+    ndkeywords={__set_taint__, exec},
+    ndkeywordstyle=\color{orange}\bfseries,
+    identifierstyle=\color{black},
+    sensitive=false,
+    comment=[l]{//},
+    morecomment=[s]{/*}{*/},
+    commentstyle=\color{gray}\itshape,
+    stringstyle=\color{red},
+    morestring=[b]',
+    morestring=[b]"
+}
+
+% Settings for listings
+\lstset{
+    language=JavaScript,
+    basicstyle=\ttfamily\footnotesize, % Use a better monospaced font
+    breaklines=true,
+    keywordstyle=\color{blue}\bfseries,
+    stringstyle=\color{red},
+    commentstyle=\color{gray}\itshape,
+    numbers=left,                     % Line numbers on the left
+    numberstyle=\tiny\color{gray},   % Line numbers styling
+    frame=single,                    % Frame around the code
+    captionpos=b,                    % Caption below the code
+    xleftmargin=15pt,                % Margin on the left
+    xrightmargin=15pt                % Margin on the right
+}
+
+\usepackage{pifont}
+\newcommand{\cmark}{\checkmark} % Checkmark symbol
+\newcommand{\xmark}{\ding{55}} % Cross symbol

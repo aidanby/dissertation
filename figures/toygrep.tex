@@ -1,0 +1,61 @@
+\begin{figure}[h]
+    \centering
+    \vspace{-0.5em}
+    % Left side: Two code listings stacked vertically (wider column)
+    \begin{minipage}{0.64\linewidth}  % Increase width for code
+        \centering
+        \begin{lstlisting}[language=JavaScript, caption=Source code for the toy package \texttt{toygrep}, label=lst:toy_code]
+function grep(query) {
+    exec("grep " + query);
+}
+        \end{lstlisting}
+
+        \vspace{0.5cm} % Add spacing between the two listings
+
+        \begin{lstlisting}[language=JavaScript, caption=Driver program for the toy package \texttt{toygrep}, label=lst:driver_program]
+var PUT = require("toygrep");
+var x = "tainted"; // {0:'0'}
+__set_taint__(x);
+try{PUT.grep(x);}
+catch (e) {console.log(e)}
+        \end{lstlisting}
+    \end{minipage}
+    \hfill
+    % Right side: Corrected Vertical Provenance Graph with Curved Arrow
+    \begin{minipage}{0.34\linewidth}  % Reduce width for graph
+        \centering
+        \begin{tikzpicture}[
+            scale=0.93, % Reduce overall scale
+            node distance=1.2cm, % Adjust vertical spacing
+            every node/.style={draw, align=center, font=\small, ellipse, minimum height=0.8cm, minimum width=2.5cm, transform shape},
+            normal/.style={draw=black},
+            taintededge/.style={-{Stealth}, thick, red},
+            untaintededge/.style={-{Stealth}, thick, black},
+            taintflow/.style={-{Stealth}, thick, red}
+        ]
+
+        % Nodes (Maintaining correct flow)
+        \node[normal] (n1) {Untainted \\ {[String: 'grep ']}};
+        \node[normal, below=0.7cm of n1] (n2) {call:grep \\ 'tainted'};
+        \node[normal, below=0.6cm of n2] (n3) {string.concat \\ 'grep tainted'};
+        \node[normal, below=0.6cm of n3] (n4) {call:exec \\ 'grep tainted'};
+
+        % Correct edges (Maintaining the taint propagation paths)
+        \draw[taintededge] (n2) -- (n3);  % Tainted input to concatenation
+        \draw[taintflow] (n3) -- (n4);  % Tainted execution propagation
+
+        % Self-loop for call:grep to show taint persistence
+        \draw[taintflow] ([xshift=-1.2cm, yshift=0.4cm]n2.north) to[out=0, in=90] (n2.north);
+
+        % Special curved edge to bypass n2 (from n1 to n3, passing across n2)
+        \draw[untaintededge] (n1.south east) to[out=-50, in=50] (n3.north east);
+
+        \end{tikzpicture}
+        \label{fig:corrected-toy-provenance-graph}
+    \end{minipage}
+    \caption{Provenance graph generated from the \texttt{toygrep} package.
+    % and its source code and driver program. 
+    Upper-left section contains source code (Listing \ref{lst:toy_code}); Bottom-left section contains the driver program (Listing \ref{lst:driver_program}); Right section presents the provenance graph. A circle is a node. Black edges are untainted, red edges are tainted flows.}
+    \label{fig:toy-provenance-graph}
+    \vspace{-0.5em}
+\end{figure}

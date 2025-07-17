@@ -1,0 +1,42 @@
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.idx
+*.ind
+*.lof
+*.lot
+*.out
+*.toc
+*.acn
+*.acr
+*.alg
+*.glg
+*.glo
+*.gls
+*.fls
+*.log
+*.fdb_latexmk
+*.snm
+*.synctex(busy)
+*.synctex.gz*
+*.nav
+*.vrb
+*.run.xml
+*.bcf
+*.xdv
+
+# PDF output (uncomment if you don't want to track the PDF)
+# *.pdf
+
+# macOS specific files
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# VS Code settings (optional, you might want to track these)
+# .vscode/
+
+# Brazil workspace files
+DissertationWorkspace/

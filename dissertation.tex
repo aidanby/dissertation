@@ -212,7 +212,7 @@ software engineering is an evolving process, including testing, debugging, and m
 
 To support this statement, we make the following contributions. 
 
-I first propose and evaluate a bidirectional fine-tuning technique that enables a previously left-to-right LLM to locate and rank faulty lines of code. We built the LLM-based fault localization technique without depending on preciously written tests, and so the tool can also detect run-time security vulnerabilities. 
+I first propose and evaluate a bidirectional fine-tuning technique that enables a previously left-to-right LLM to locate and rank faulty lines of code. We built the LLM-based fault localization technique without depending on preciously written tests, and so the tool can also detect runtime security vulnerabilities. 
 
 I further study a LLM's ability for program repair by combining the LLM's intermediate entropy values with traditional program repair techniques. In particular, we used LLM entropy values to improve three stages of program repair: fault localization, patch testing efficiency, and plausible patch ranking. Finally, we created a tool for fully automated Rust function transpilation using LLMs and verification harnesses. To support our claims, we evaluated all our LLM-based software evolution tools on real world bugs, security vulnerabilities, and target transpilation repositories.
 
@@ -1731,8 +1731,8 @@ In total, we evaluate our approach on \textbf{569 C++} programs, \textbf{520 C} 
 
 \subsection{Evaluation Metrics}
 Neural machine translation (NMT) approaches use
-metrics that measure token similarity between the expected output and the actual output produced by the LLM. While these approaches are often meaningful when applied to natural language, for programming languages, small differences in the expected output and actual output could result in different compilation or run-time behavior.
-Conversely, two programs that share very few tokens (and hence have a very low text similarity score) could have identical compilation or run-time behavior.
+metrics that measure token similarity between the expected output and the actual output produced by the LLM. While these approaches are often meaningful when applied to natural language, for programming languages, small differences in the expected output and actual output could result in different compilation or runtime behavior.
+Conversely, two programs that share very few tokens (and hence have a very low text similarity score) could have identical compilation or runtime behavior.
 For programming languages, metrics based off of passing tests have been proposed. Roziere et al.~\cite{roziere2020unsupervised} and Szafraniec
 et al.~\cite{szafraniec2022code} use the computational accuracy (CA)
 metric, which counts a translation as correct if it passes a series of
@@ -1893,7 +1893,7 @@ In this work, we study the combination of LLMs and formal verification to transp
 
 \chapter{Security Vulnerability Detection with Self-Instruct LLM Finetuning}
 \label{ch:msivd}
-Software security vulnerabilities allow attackers to perform malicious activities to disrupt software operations (i.e., security exploits). Since security exploits often occur during run-time, the independence of tests for LLM-based vulnerability detection shows promise.
+Software security vulnerabilities allow attackers to perform malicious activities to disrupt software operations (i.e., security exploits). Since security exploits often occur during runtime, the independence of tests for LLM-based vulnerability detection shows promise.
 
 The nuances of security vulnerabilities have been a pain-point for prior static analysis and machine learning vulnerability detection tools. The specific properties of security vulnerabilities lead me to believe that the attention-based LLMs can leverage these nuances for greater detection effectiveness. Importantly, the presence of rich, detailed vulnerability explanations available online leads me to believe a LLM can gain an understanding of how and why vulnerability can exist, and how that could lead to a security exploit. 
 
@@ -2023,8 +2023,38 @@ In this section, we present the results evaluating \textit{MSIVD}'s performance 
 \end{enumerate}
 All results presented in this section were obtained using an Intel(R) Xeon(R) 6248R CPU @ 3.00GHz running Debian GNU/Linux 1 and two Nvidia Quadro RTX 8000 GPUs.
 
+\subsection{Datasets}
 
-\subsection{Setup}
+\subsubsection{Established Dataset}
+Recently-proposed vulnerability detection models~\cite{deepdfa, ivdetect, linevd, linevul} are typically evaluated on the \textit{Devign}~\cite{zhou2019devign} or \textit{BigVul}~\cite{bigvul} datasets of real-world C/C++ projects and vulnerabilities. We choose \textit{BigVul} for our evaluation because it is equipped with both labelled code snippets (functions) and CWE explanations (\textit{Devign} only contains labeled code snippets); is an order of magnitude larger; and is imbalanced. 
+Following prior work, and for fair comparison with IVDetect~\cite{ivdetect}, LineVul~\cite{linevul} and DeepDFA~\cite{deepdfa}, we split \textit{BigVul} into a 80/10/10 split on training, evaluating, and testing. We exclude the same 1,564 labeled functions (0.8\%)  from the dataset as 
+LineVul~\cite{linevul} and DeepDFA~\cite{deepdfa}, namely those with functions that
+(1) are incomplete (i.e., ending with ‘);’, or not ending in
+‘\}’) that cannot be parsed,
+(2) contain no added nor removed lines, but were simply labelled vulnerable. (3) entailed a fix that modified more than 70\% of lines,  indicating a substantial change that may fundamentally change the vulnerable code, or 
+(4) are fewer than 5 lines long.
+
+\subsubsection{Novel Dataset}
+\textit{BigVul} contains vulnerabilities sampled from \textit{before} most modern LLM's training cut-off date of January 2023~\cite{bigvul, zhou2019devign, linevul}. Since our tool is based on pre-trained LLMs, we also collect labelled vulnerability data produced after that date, to mitigate the risk of data leakage. 
+We use the \textit{PreciseBugCollector}~\cite{precisebugs} toolset to produce this dataset.
+%
+\textit{PreciseBugCollector} mines verified vulnerabilities reported by human annotators from the National Vulnerability Dataset (NVD), which includes significant and well-known vulnerabilities, such as HeartBleed (CVE-2014-0160\footnote{\url{https://nvd.nist.gov/vuln/detail/cve-2014-0160}}) %Spectre (CVE-2017-5753 and CVE-2017-5715\footnote{\url{https://nvd.nist.gov/vuln/detail/cve-2017-5753} and \url{https://nvd.nist.gov/vuln/detail/cve-2017-5715}})
+and Log4Shell (CVE-2021-44228\footnote{\url{https://nvd.nist.gov/vuln/detail/cve-2021-44228}}).
+\textit{PreciseBugCollector} uses the public NVD API\footnote{\url{https://nvd.nist.gov/developers/vulnerabilities}} to download comprehensive vulnerability metadata for human-expert-confirmed vulnerabilities. 
+%This produces a rich overall dataset of human expert-confirmed vulnerabilities 
+%accompanied by information like vulnerability descriptions, types identified by the CWE (Common Weakness Enumeration) ID, severity levels, and references, often including source and patches. 
+%
+We collect the 2,543 vulnerabilities (of 217,403 overall) in the NVD database that contain external links to GitHub commits, tagged with \textit{Patch}, touching C or C++ code (like \textit{BigVul}), and extract the fixed source code accordingly.  Splitting the 2,543 vulnerabilities into individual file patches produces 12,970 file-level changes.\footnote{Our tool, like prior work, assumes that vulnerabilities are localized to single files, which is not always the case; we discuss limitations to this assumption in Section~\ref{sec:threats}.} We leave consideration of multi-language tuning and detection, a known challenge~\cite{instruct_vul}, to future work.  Note that \emph{PreciseBugCollector} also provides a fault injection mode that can create large quantities of synthetic defects; we do not use this mode, and collect only real reported bugs and associated metadata and explanations from NVD. 
+
+Our \textit{PreciseBugs} dataset consists of 80\% non-vulnerable and 20\% vulnerable samples. Vulnerable samples are constructed from the human-patched code. We purposefully craft our dataset to be unbalanced to make it more difficult for a model to guess (i.e., 50\% coin toss) the correct answer, and to replicate real world settings (most code in the real world is not vulnerable). 
+We split the dataset into a 80/10/10 split on training, evaluating, and testing.
+We train on vulnerability samples from before January 2023, and produce evaluation and testing datasets of vulnerabilities 
+where the associated vulnerability label and code fix occurred after January 2023.  This both mitigates the risk of data leakage in the pre-trained LLMs, and represents realistic usage (a model will necessarily always train on previously-discovered vulnerabilities, to detect future, as-yet-undiscovered vulnerabilities). 
+
+Our augmentation of the original \textit{PreciseBugs} dataset therefore entails (1) splitting samples into single file code snippets to fit within LLM context windows, (2) processing samples into a student-teacher dialogue format, and, most importantly, (3) re-running \textit{PreciseBugCollector} on 2023--2024 labelled vulnerabilities to mitigate LLM evaluation data leakage.
+
+
+\subsection{Benchmarks}
 \label{sec:baselines}
 
 For classification, we convert the existence of a vulnerability into binary labels. To characterize classification effectiveness for an entire
@@ -2205,7 +2235,7 @@ Our tool surpasses prior state-of-the-art results on established vulnerability d
 As discussed in Chapter~\ref{ch:msivd}, we aim to improve the vulnerability detector from Chapter~\ref{ch:llmao} for larger, real-world repositories. Chapter~\ref{ch:msivd} extends \textit{LLMAO} with \textit{MSIVD}, which addresses the key limitation of context window sizing. \textit{MSIVD} leverages the data flow analysis (DFA) of a program into trainable objectives for LLM-based vulnerability detection. DFA tracks how data moves through program variables by capturing control flow and data dependencies. However, not all information passed across a repository is represented by variables. A more specific static analysis technique is the creation of \textit{provenance graphs}. Provenance graphs track data origins and transformations, and focuses on capturing relationships between data artifacts and processes. Provenance graphs investigate the ``why'' and ``how'' of data transformations, which are necessary for uncovering certain exploits. In this work, we further extend our previous vulnerability detector with provenance graphs, which are constructed through dynamic taint analysis that capture the
 complete history of operations applied to tainted values during a program’s execution. Each node in a provenance graph represents a taint-related operation or value, while edges illustrate the flow of data between these nodes.
 
-The popular Node.js ecosystem has become an attractive target for attackers. Two of the most serious vulnerabilities are Arbitrary Command Injection (ACI) and Arbitrary Code Execution (ACE), which allow attackers to execute malicious commands or code on the system that runs the application. Prior work such as \nodemedicfine used program synthesis to generate proof-of-concept exploits for Node.js packages for vulnerability confirmation. However, there are many instances where no exploit is produced, resulting in a high number of false positives that require manual analysis. 
+The popular Node.js ecosystem has become an attractive target for attackers. Two of the most serious vulnerabilities are Arbitrary Command Injection (ACI) and Arbitrary Code Execution (ACE), which allow attackers to execute malicious commands or code on the system that runs the application \cite{cwe_94, cwe_77}. Prior work such as \nodemedicfine used program synthesis to generate proof-of-concept exploits for Node.js packages for vulnerability confirmation. However, there are many instances where no exploit is produced, resulting in a high number of false positives that require manual analysis. 
 
 This work investigates whether ML-based approaches can predict ACE and ACI vulnerabilities in Node.js packages. We present a large-scale dataset of over 2,000 package-level vulnerabilities with human-reviewed labels. We conduct a comprehensive evaluation of approaches based on large language models (LLMs), program analysis extended with ML approaches, and hybrid ML methods.
 We integrate the vulnerability detection engine of a prior program analysis tool, \nodemedic, with Graph Neural Networks, Random Forest, XGBoost, Logistic Regression, SVM, and LLMs to reduce false negatives.
@@ -2213,6 +2243,13 @@ We integrate the vulnerability detection engine of a prior program analysis tool
 Our results indicate that 
 both traditional machine learning models and LLMs when combined with program analysis tools can predict Node.js package exploitability with high accuracy.
 Our work provides insights into the effectiveness and challenges of using LLMs for vulnerability detection in JavaScript packages.
+
+
+
+
+
+
+
 
 \section{NODEMEDIC-LLM}
 In this work, we conduct a comprehensive evaluation of LLM-based methods, program analysis-based methods, ML-enhanced program analysis methods, and a hybrid approach that combines LLMs, \nodemedicfine, and GNNs for detecting vulnerabilities in JavaScript code.
@@ -2332,7 +2369,9 @@ We first outline the model selection and implementation (Section \ref{subsec:mod
 \subsection{Model Selection and Implementation}\label{subsec:model_selection}
 
 We directly report the latest results from the \nodemedicfine experiments in Section \ref{sec:results}. We evaluated FAST~\footnote{FAST implementation accessed at \url{https://github.com/fast-sp-2023/fast}}
-against our dataset. For FAST, we enabled the \texttt{-X} flag to turn on auto-exploit generation. 
+against our dataset. 
+FAST~\cite{kang2023scaling} uses constraint solving to generate \emph{potential} exploits. Successful execution of the generated exploits could be used to confirm vulnerabilities, though FAST stops after exploit generation and thus can report false positives. 
+For FAST, we enabled the \texttt{-X} flag to turn on auto-exploit generation. 
 % \limin{this is covered in background}
 % However, it is worth noting that FAST does not actually execute an exploit to confirm the vulnerability. Instead, it attempts to solve the exploitability constraints and reports a vulnerability as exploitable if a solution is found. 
 Additionally, for FAST, we used the \texttt{-t} flag to specify vulnerability types as \texttt{os\_command} and \texttt{code\_exec}, which correspond to ACI and ACE vulnerabilities, respectively.
@@ -2428,7 +2467,7 @@ To assess the effectiveness of LLM-based methods in detecting exploitable vulner
 
 Table \ref{tab: main_results} shows the full results of our evaluations. We include four naive baselines for comparison: Random ($P_\textit{vuln}=1/2$), Random ($P_\textit{vuln}=1173/1640$), Random ($P_\textit{vuln}=1$), and Random ($P_{vuln}=0$). The first baseline randomly predicts vulnerabilities with a probability of $1/2$, the second baseline uses the ratio of vulnerable packages in the training split of our dataset, the third baseline always predicts vulnerabilities, and the fourth baseline never predicts vulnerabilities. The performance of methods using GNNs is based on the average of three runs, as the results are not deterministic when using GPUs. In contrast, other methods are deterministic and are evaluated with just one run.
 
-\paragraph{Program Analysis Approaches} 
+\bf{Program Analysis Approaches.}
 Traditional program analysis methods, such as FAST and \nodemedicfine, have high precision, but low recall, 
 indicating that they often miss vulnerabilities. \nodemedicfine with auto-confirmation has better precision and recall than FAST, because FAST only generates potential exploits, some of which do not work.
 
@@ -2438,7 +2477,7 @@ ML-enhanced program analysis significantly improves performance:
 Other ML-enhanced methods (e.g., Random Forest, XGBoost, SVM) also perform well, with F1 scores ranging from 0.914 to 0.931.
 This indicates that combining machine learning with program analysis enhances detection accuracy and recall without significantly sacrificing precision.
 
-\paragraph{LLM-based Methods}
+\bf{LLM-based Methods.}
 LLM-based methods exhibit significant variability based on whether they are used in a zero-shot setting or fine-tuned with various strategies. Overall, zero-shot LLMs tend to perform poorly. Even very large commercial models (e.g., OpenAI o3-mini-high) do not perform well in zero-shot settings. Fine-tuned LLMs generally achieve higher F1 scores. However, fine-tuning only the classification head results in notably lower performance compared to LoRA and full fine-tuning. We will provide a more detailed analysis of the results in Section \ref{subsec:rq4}. Besides, adding \nodemedicfine features and GNN embeddings to LLMs does not always improve performance. For example, Qwen2.5-Coder-7B-Instruct with \nodemedicfine features and GNN embeddings performs worse than the same model without these features. We will discuss this in more detail in Section \ref{subsec:rq3}. 
 
 Overall, ML-enhanced program analysis methods (e.g., \nodemedic{-GNN}, F1: 0.943) outperform both traditional program analysis and even all fine-tuned LLMs. The best fine-tuned LLMs, Qwen2.5-Coder-7B (F1: 0.933), perform similarly to ML-enhanced methods but require significant training resources. Zero-shot LLMs are inconsistent and can sometimes perform worse than random baselines. Traditional program analysis methods struggle with recall, which can limit their practical application in real-world scenarios. However, because they can generate proof-of-concept exploits, they may be more suitable for tasks where PoC or perfect precision is necessary. In contrast, ML-enhanced methods can offer a higher recall and higher F1 score solution. 
@@ -2499,7 +2538,7 @@ We found that for non-vulnerable packages, the sink function \textit{spawn} cons
   \includegraphics[width=\linewidth]{figures/formatted_code.pdf}
   \vspace{-10pt}
   \caption{Shapley values of the full-fine-tuned DeepSeek-R1-Distill-Qwen-7B on a
-  package \textit{third-party-resources-checker}. The correct prediction is: "not vulnerable." Red values indicate a positive contribution to the vulnerable prediction, while blue values indicate a negative contribution. Darker colors represent a higher absolute Shapley value. 
+  package \textit{third-party-resources-checker}. The correct prediction is: ``not vulnerable.'' Red values indicate a positive contribution to the vulnerable prediction, while blue values indicate a negative contribution. Darker colors represent a higher absolute Shapley value. 
   }
   \label{fig:shapley_spawn}
 \end{figure}

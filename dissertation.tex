@@ -2231,6 +2231,7 @@ Meanwhile, the relatively small curated security vulnerability datasets provide 
 Our tool surpasses prior state-of-the-art results on established vulnerability datasets. Furthermore, because of the risk (and evidence) of LLM data contamination, we collect a novel vulnerability dataset with evaluation and test samples  exclusively filtered to be vulnerabilities identified past our pre-trained code LLM's training cutoff, and show that our technique outperforms prior work on that dataset as well. 
 
 \chapter{Node.js Vulnerability Detection with Program Analysis and pretrained LLMs}
+\label{ch:nodejs}
 
 As discussed in Chapter~\ref{ch:msivd}, we aim to improve the vulnerability detector from Chapter~\ref{ch:llmao} for larger, real-world repositories. Chapter~\ref{ch:msivd} extends \textit{LLMAO} with \textit{MSIVD}, which addresses the key limitation of context window sizing. \textit{MSIVD} leverages the data flow analysis (DFA) of a program into trainable objectives for LLM-based vulnerability detection. DFA tracks how data moves through program variables by capturing control flow and data dependencies. However, not all information passed across a repository is represented by variables. A more specific static analysis technique is the creation of \textit{provenance graphs}. Provenance graphs track data origins and transformations, and focuses on capturing relationships between data artifacts and processes. Provenance graphs investigate the ``why'' and ``how'' of data transformations, which are necessary for uncovering certain exploits. In this work, we further extend our previous vulnerability detector with provenance graphs, which are constructed through dynamic taint analysis that capture the
 complete history of operations applied to tainted values during a program’s execution. Each node in a provenance graph represents a taint-related operation or value, while edges illustrate the flow of data between these nodes.
@@ -2254,9 +2255,9 @@ Our work provides insights into the effectiveness and challenges of using LLMs f
 \section{NODEMEDIC-LLM}
 In this work, we conduct a comprehensive evaluation of LLM-based methods, program analysis-based methods, ML-enhanced program analysis methods, and a hybrid approach that combines LLMs, \nodemedicfine, and GNNs for detecting vulnerabilities in JavaScript code.
 A summary of our approaches is shown in Figure~\ref{fig:nodemedic}.
-More concretely, we implement the following approaches with machine learning predictors that can help reduce the effort required for manual confirmation of package exploitability. (1) LLMs that do not rely on program analysis tools. (2) \nodemedic{-ML} that applies various ML models (Random Forest, XGBoost, Logistic Regression, and SVM) to predict vulnerabilities based on the provenance graph output from the dynamic taint analysis tool \nodemedicfine. 
-(3)\nodemedic{-GNN}, which is setup similarly as \nodemedic{-ML} but uses Graph Neural Networks. 
-(4) \nodemedic{-GNN-LLM}, which combines the embedding layers of the GNN model and the pre-trained language models (LMs).
+More concretely, we implement the following approaches with machine learning predictors that can help reduce the effort required for manual confirmation of package exploitability. (1) LLMs that do not rely on program analysis tools (Section~\ref{subsec:llm_methods}). (2) \nodemedic{-ML} that applies various ML models (Random Forest, XGBoost, Logistic Regression, and SVM) to predict vulnerabilities based on the provenance graph output from the dynamic taint analysis tool \nodemedicfine (Section~\ref{subsec:ml_enhanced}). 
+(3)\nodemedic{-GNN}, which is setup similarly as \nodemedic{-ML} but uses Graph Neural Networks (Section~\ref{subsec:ml_enhanced}). 
+(4) \nodemedic{-GNN-LLM}, which combines the embedding layers of the GNN model and the pre-trained language models (LMs) (Section~\ref{subsec:hybrid_methods}).
 
 
 \subsection{Dataset}\label{subsec:datasets}
@@ -2294,7 +2295,7 @@ total & 2,051 (1,465) & 420 (360) & 1,631 (1,105) \\ \hline
 
 
 
-\subsection{LLM-based Methods}
+\subsection{LLM-based Methods}\label{subsec:llm_methods}
 Common practices in leveraging large language models (LLMs) for vulnerability detection typically fall into two categories:
 \begin{enumerate}
     \item \textbf{Zero-shot and few-shot prompting}, where the model is provided with code snippets along with carefully designed natural language queries to identify security risks. This approach benefits from LLMs' generalization ability but often struggles with nuanced vulnerabilities that require deeper program understanding.
@@ -2337,7 +2338,7 @@ In full fine-tuning, we update all parameters of the LLM and the classification 
 
 During the fine-tuning of all the aforementioned LLM-based methods, all frozen parameters are stored in 4-bit NormalFloat (NF4) precision for memory efficiency \cite{qlora}, while the trainable parameters are in 16-bit BrainFloat (BF16) precision.
 
-\subsection{ML-enhanced Program Analysis Methods}
+\subsection{ML-enhanced Program Analysis Methods}\label{subsec:ml_enhanced}
 
 \nodemedic{-GNN} and \nodemedic{-ML} utilize \nodemedic's
 taint provenance tracking component to create provenance graphs (as described in Section \ref{subsec:provenance-analysis}) in both the training and inference pipelines. The operation, tainted status, and sink type of each node are used as inputs. Additionally, the vulnerability type is included as an input for the entire graph. The 100 most common operations in our dataset (as described in Section 3.1) are assigned class numbers \texttt{0} to \texttt{99}. Class \texttt{100} is designated for less frequent operations, while class \texttt{101} is used for empty or missing operation attributes in the provenance graphs. Tainted statuses are encoded as class \texttt{0} for \texttt{False} (untainted), class \texttt{1} for \texttt{True} (tainted) and class \texttt{2} for missing attributes. Sink types are represented with class \texttt{0} for \texttt{spawn}, class \texttt{1} for \texttt{exec}, and class \texttt{2} for missing attributes. Vulnerability types are encoded as class \texttt{0} for ACE and class \texttt{1} for ACI vulnerabilities.
@@ -2354,7 +2355,7 @@ The GNN component in \nodemedic{-GNN} starts with a Gated Graph Sequence Neural 
 
 In \nodemedic{-ML}, only the node embeddings of the graph are taken into account, while the topology is disregarded. The embeddings of all nodes are first fed into a pooling layer to create a unified shape embedding vector that represents the entire graph, regardless of the number of nodes. The pooled embedding is then passed through machine learning classifiers to predict the vulnerability.
 
-\subsection{LLM-Program Analysis Hybrid Methods}
+\subsection{LLM-Program Analysis Hybrid Methods}\label{subsec:hybrid_methods}
 
 To bridge the gap between program analysis and LLM-based reasoning, we evaluate a hybrid approach \textup{(\ding{180} in Figure \ref{fig:nodemedic})} that combines \nodemedicfine{’s} vulnerability path detection, graph neural networks (GNNs), and large language models (LLMs). This method, referred to as NodeMedic-GNN-LLM , integrates the strengths of both program analysis and LLMs to enhance vulnerability detection. 
 
@@ -2467,7 +2468,7 @@ To assess the effectiveness of LLM-based methods in detecting exploitable vulner
 
 Table \ref{tab: main_results} shows the full results of our evaluations. We include four naive baselines for comparison: Random ($P_\textit{vuln}=1/2$), Random ($P_\textit{vuln}=1173/1640$), Random ($P_\textit{vuln}=1$), and Random ($P_{vuln}=0$). The first baseline randomly predicts vulnerabilities with a probability of $1/2$, the second baseline uses the ratio of vulnerable packages in the training split of our dataset, the third baseline always predicts vulnerabilities, and the fourth baseline never predicts vulnerabilities. The performance of methods using GNNs is based on the average of three runs, as the results are not deterministic when using GPUs. In contrast, other methods are deterministic and are evaluated with just one run.
 
-\bf{Program Analysis Approaches.}
+\textbf{Program Analysis Approaches.}
 Traditional program analysis methods, such as FAST and \nodemedicfine, have high precision, but low recall, 
 indicating that they often miss vulnerabilities. \nodemedicfine with auto-confirmation has better precision and recall than FAST, because FAST only generates potential exploits, some of which do not work.
 
@@ -2477,7 +2478,7 @@ ML-enhanced program analysis significantly improves performance:
 Other ML-enhanced methods (e.g., Random Forest, XGBoost, SVM) also perform well, with F1 scores ranging from 0.914 to 0.931.
 This indicates that combining machine learning with program analysis enhances detection accuracy and recall without significantly sacrificing precision.
 
-\bf{LLM-based Methods.}
+\textbf{LLM-based Methods.}
 LLM-based methods exhibit significant variability based on whether they are used in a zero-shot setting or fine-tuned with various strategies. Overall, zero-shot LLMs tend to perform poorly. Even very large commercial models (e.g., OpenAI o3-mini-high) do not perform well in zero-shot settings. Fine-tuned LLMs generally achieve higher F1 scores. However, fine-tuning only the classification head results in notably lower performance compared to LoRA and full fine-tuning. We will provide a more detailed analysis of the results in Section \ref{subsec:rq4}. Besides, adding \nodemedicfine features and GNN embeddings to LLMs does not always improve performance. For example, Qwen2.5-Coder-7B-Instruct with \nodemedicfine features and GNN embeddings performs worse than the same model without these features. We will discuss this in more detail in Section \ref{subsec:rq3}. 
 
 Overall, ML-enhanced program analysis methods (e.g., \nodemedic{-GNN}, F1: 0.943) outperform both traditional program analysis and even all fine-tuned LLMs. The best fine-tuned LLMs, Qwen2.5-Coder-7B (F1: 0.933), perform similarly to ML-enhanced methods but require significant training resources. Zero-shot LLMs are inconsistent and can sometimes perform worse than random baselines. Traditional program analysis methods struggle with recall, which can limit their practical application in real-world scenarios. However, because they can generate proof-of-concept exploits, they may be more suitable for tasks where PoC or perfect precision is necessary. In contrast, ML-enhanced methods can offer a higher recall and higher F1 score solution. 

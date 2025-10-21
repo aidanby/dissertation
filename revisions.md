@@ -38,10 +38,10 @@
 - [x] Add novelty claims for each contribution (what was new at time of publication)
 - [x] Include paper references for each contribution (\cite{Llmao}, \cite{yang2024revisiting}, \cite{vert}, \cite{yang2024security})
 - [x] Add GitHub repository links for each tool:
-  - LLMAO: https://github.com/squaresLab/LLMAO
-  - Entropy-based APR: https://github.com/squaresLab/entropy-apr-replication
-  - VERT: https://github.com/YoshikiTakashima/vert
-  - MSIVD: https://github.com/squaresLab/multitask-vuln-paper
+  - LLMAO: <https://github.com/squaresLab/LLMAO>
+  - Entropy-based APR: <https://github.com/squaresLab/entropy-apr-replication>
+  - VERT: <https://github.com/YoshikiTakashima/vert>
+  - MSIVD: <https://github.com/squaresLab/multitask-vuln-paper>
 - [x] Specify quantitative results for each contribution
 
 #### 2.2 Current Contributions to Update
@@ -98,23 +98,23 @@ Note: Chapter 7 (Node.js/NodeMedic) is treated as an extension/application of th
 
 For each of Chapters 3-7, add opening section that:
 
-- [ ] **Chapter 3 (Fault Localization):**
+- [x] **Chapter 3 (Fault Localization):**
   - Relate to thesis statement: "addresses the limitation of left-to-right LLMs for discriminative tasks"
   - Explain which part of thesis this supports: "bidirectional understanding of software properties"
 
-- [ ] **Chapter 4 (Automated Program Repair):**
+- [x] **Chapter 4 (Automated Program Repair):**
   - Relate to thesis statement: "demonstrates that LLM uncertainty can guide traditional APR"
   - Explain which part of thesis this supports: "combining LLM capabilities with program analysis"
 
-- [ ] **Chapter 5 (Program Transpilation):**
+- [x] **Chapter 5 (Program Transpilation):**
   - Relate to thesis statement: "shows that LLM generation requires verification for correctness"
   - Explain which part of thesis this supports: "formal verification as program analysis for LLM outputs"
 
-- [ ] **Chapter 6 (Security Vulnerability Detection):**
+- [x] **Chapter 6 (Security Vulnerability Detection):**
   - Relate to thesis statement: "extends fault localization to multi-file, multi-task scenarios"
   - Explain which part of thesis this supports: "holistic understanding through multi-task learning"
 
-- [ ] **Chapter 7 (Node.js Vulnerability Detection):**
+- [x] **Chapter 7 (Node.js Vulnerability Detection):**
   - Relate to thesis statement: "demonstrates hybrid approach with dynamic program analysis"
   - Explain which part of thesis this supports: "taint analysis as program property for LLM guidance"
 
@@ -122,35 +122,35 @@ For each of Chapters 3-7, add opening section that:
 
 For each of Chapters 3-7, add/revise conclusion section that:
 
-- [ ] **Chapter 3 Conclusion:**
+- [x] **Chapter 3 Conclusion:**
   - Reiterate novelty: First test-free fault localization using bidirectional fine-tuning
   - State contributions: Outperforms SOTA on 3 benchmarks (Defects4J, BugsInPy, Devign)
   - Connect to thesis: Proves bidirectional understanding improves discriminative tasks
-  - Evidence provided: Quantitative results showing X% improvement over baselines
+  - Evidence provided: Outperforms GRACE, DeepFL, DEAR, TransferFL on 395+493+5,260 bugs
 
-- [ ] **Chapter 4 Conclusion:**
+- [x] **Chapter 4 Conclusion:**
   - Reiterate novelty: First use of LLM entropy for all three APR stages
   - State contributions: 18% precision improvement in patch classification
   - Connect to thesis: Demonstrates LLM uncertainty as valuable program analysis signal
-  - Evidence provided: Evaluation on Defects4J showing improvements at each stage
+  - Evidence provided: 24 test runs saved per bug, 49% Top-1 improvement vs. Shibboleth
 
-- [ ] **Chapter 5 Conclusion:**
+- [x] **Chapter 5 Conclusion:**
   - Reiterate novelty: First verified transpilation using LLMs with formal verification
   - State contributions: 100% functional correctness with improved naturalness
   - Connect to thesis: Shows verification is necessary for LLM-based code transformation
-  - Evidence provided: Comparison to C2Rust on real-world repositories
+  - Evidence provided: 40% more C++, 37% more C, 47% more Go programs verified (1,394 total)
 
-- [ ] **Chapter 6 Conclusion:**
+- [x] **Chapter 6 Conclusion:**
   - Reiterate novelty: Multi-task learning for vulnerability detection and explanation
   - State contributions: SOTA on post-training-cutoff vulnerability dataset
   - Connect to thesis: Extends fault localization to multi-file, security-focused scenarios
-  - Evidence provided: Performance on novel dataset avoiding contamination
+  - Evidence provided: SOTA on BigVul/PreciseBugs and post-training-cutoff dataset
 
-- [ ] **Chapter 7 Conclusion:**
+- [x] **Chapter 7 Conclusion:**
   - Reiterate novelty: Integration of taint provenance with neural approaches
   - State contributions: F1 score of 0.943 on Node.js vulnerabilities
   - Connect to thesis: Demonstrates value of dynamic program analysis with LLMs
-  - Evidence provided: Comparison to NodeMedic-ML and traditional approaches
+  - Evidence provided: F1=0.943 on 2,051 npm packages, outperforms pure analysis/LLM methods
 
 ### 6. Title Revision (Priority: LOW - After Thesis Statement)
 

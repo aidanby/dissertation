@@ -334,178 +334,56 @@ I evaluate MSIVD on established vulnerability datasets (BigVul and PreciseBugs) 
 \chapter{Background and Related Works}
 \label{ch:background}
 
-The following sections give an overview of related work and background
-that inform the proposed work.
+This chapter provides foundational background on the key technologies that underpin this dissertation: Large Language Models (LLMs) and their application to code-related tasks, and program analysis techniques. Chapter-specific related work and detailed technical background are presented in their respective chapters.
 
-\section{LLM for code}
-Language models have been used for code generation, bug detection, and patch
-generation. Recent language models finetune on code as training data and can
-perform code completion~\cite{desai2016program, inCoder}, and generate code
-based on natural language~\cite{raychev2014code} with impressive results. Large
-Language Models (LLMs), such as Codex~\cite{Codex}, GPT-Neo~\cite{Neox}, and
-Llama-2~\cite{Llama} have raised performance on these tasks by using more
-trainable parameters and training data. Ray et al.~\cite{NAT} study the
-relationship between bugginess and LLM-entropy. Ray et al. empirically showed
-that n-gram models trained over a large corpus of code will find buggy
-statements more surprising, as indicated by a high entropy score. 
-Kolak et
-al.~\cite{LLM-PATCH} revisit the question of naturalness (i.e., the
-human-readability) of patches in the era of large language models. Kolak et al. experimented with models ranging from [160M to 12B] parameters, and measured the similarly between LLM generated patches and developer written patches. Their
-results show that larger models tend to generate test-passing lines at a higher
-rate. Additionally, LLM generated patches tend to be more similar to the
-human-written patch as model size increases. Xia et al.~\cite{xia2023automated} directly applied LLMs for APRs and found that LLMs can suggest multi-line fixes with higher accuracy than state of the art APR tools. Xia et al.~\cite{xia2023automated} concluded that while LLMs can often perform localization and generation in one shot, it is significantly more cost-effective to use traditional FL first/instead, motivating our work. 
+\section{Large Language Models}
 
-\section{Fault Localization}
-Prior fault localization tools use test output information, code semantics, and
-naturalness of code to achieve a high degree of confidence on bug detection.
-Spectrum-based Fault Localization (SBFL)~\cite{abreu2006evaluation,
-abreu2007accuracy} uses a ratio of passed and failed tests covering each line of
-code to calculate its suspiciousness score, in which a higher suspiciousness
-signifies a higher probability of being faulty. Recent advances in deep learning
-created a spur of research on using graph neural networks (GNNs)~\cite{GNN} for
-fault localization. GRACE~\cite{Grace}, DeepFL~\cite{DeepFL}, and
-DEAR~\cite{Dear} encode the code AST and test coverage as graph representations
-before training deep learning models for fault localization.
-TransferFL~\cite{TransferFL} combined semantic features of code and the
-transferred knowledge from open-source code data to improve the accuracy of
-prior deep learning fault localization tools.
+Large Language Models (LLMs) are neural networks trained on vast amounts of text data to predict and generate natural language. In recent years, LLMs have been increasingly applied to code-related tasks, leveraging the observation that source code shares many properties with natural language while also exhibiting unique structural characteristics.
 
-\section{Patch correctness}
-Similarly to prior fault localization tools, prior patch disambiguation tools
-leverage test output information and code information (both code syntax and code
-semantics) for ranking or classifying patches. Qi et al.~\cite{qi2015analysis} analyzed the reported
-bugs of three generate-and-validate APR tools: GenProg~\cite{genprog},
-RSRepair~\cite{rsrepair}, and AE~\cite{ae} systems, to find that producing
-correct results on a validation test suite is not enough to ensure patch
-correctness. Smith et al.~\cite{CURE} performed
-an experiment that interrogates whether or not automatically generated patches
-are prone to overfitting to their test suite. Borrowing the concept of training
-and test sets from machine learning, they found that automated program repair
-(APR) typically used the same test-suite for both ``training" (generating the
-patch), and ``testing" (validation). Smith et al. found that both the coverage
-rate of the test-suite, as well as the assignment of test/train sets between the
-two suites, impact the degree of overfitting in repair. To counteract the
-overfitting problem, Ye et al.~\cite{ye_patches} proposed ODS (Overfitting
-Detection System), a novel system to statically classify overfitting patches.
-Xiong et al.~\cite{patch-sim} generated both execution traces of patched
-programs and new tests to assess the correctness of patches. Ghanbari et
-al.~\cite{Shibboleth} used both the syntactic and semantic similarity between
-original code and proposed patch, and code coverage of passing tests to rank
-patches. Shibboleth~\cite{Shibboleth} was able to rank the correct patch in
-Top-1 and Top-2 positions in 66\% of their curated dataset. Tian et
-al.~\cite{Panther} proposed machine learning predictor with BERT
-transformer-based learned embeddings for patch classification. Tian et al. found
-that learned embeddings of code fragments with BERT~\cite{BERT},
-CC2Vec~\cite{cc2vec}, and Doc2Vec~\cite{doc2vec} yield similarity scores that,
-given a buggy code, substantially differ between correctly-patched code and
-incorrectly-patched one. 
-Yang et al.~\cite{yang2023large} found that state-of-the-art learning-based techniques suffered from the dataset overfitting problem, and that naturalness-based
-techniques outperformed traditional static techniques, in particular
-Patch-Sim~\cite{patch-sim}.
+\subsection{Transformer Architecture}
 
+Modern LLMs are built on the Transformer architecture~\cite{vaswani2017attention}, which uses self-attention mechanisms to process sequential data. Unlike earlier recurrent neural networks that process tokens sequentially, Transformers can attend to all positions in a sequence simultaneously, enabling more effective learning of long-range dependencies.
 
-\section{Equivalence verification}
-Equivalence verification has been studied in settings where two copies
-of should-be-equivalent artifacts are available: compiler
-optimizations~\cite{churchill_semantic_2019,churchill_sound_2017} and program
-verification~\cite{antonopoulos_algebra_2023,kommrusch_self-supervised_2023}. Our
-work uses equivalence verification for program language
-translation.
+The core innovation of the Transformer is the attention mechanism, which computes weighted representations of input tokens based on their relationships to other tokens in the sequence. For a sequence of tokens, the model learns to assign attention weights that determine how much each token should influence the representation of every other token. This mechanism allows the model to capture complex dependencies and contextual relationships in the input.
 
+Most LLMs for code are trained in a left-to-right (causal) manner, where each token is predicted based only on preceding tokens. This training objective, while effective for code generation tasks, creates representations where each token's embedding is conditioned only on its left context. This limitation motivates some of the technical contributions in this dissertation, particularly for discriminative tasks like fault localization that benefit from bidirectional context.
 
-\section{Rust transpilers}
-Prior Rust transpilers convert C/C++ to Rust.  C2Rust~\cite{C2Rust}
-automatically converts large-scale C programs to Rust while preserving
-C semantics. Citrus~\cite{citrus} and Bindgen~\cite{bindgen} both
-generate Rust FFI bindings from C libraries, and produce Rust code
-without preserving C semantics. Bosamiya et
-al.~\cite{bosamiya2022provably} embedded WebAssembly (Wasm) semantics
-in safe Rust code for the Rust compiler to emit safe and executable
-Rust code. Bosamiya et al.~\cite{bosamiya2022provably} implemented all
-stages of their tool in safe Rust, and no stage of compiler needs to
-be further verified or trusted to achieve safety.
-Existing tools for making unsafe Rust safer focus on converting raw
-pointers to safe references. Emre et al.~\cite{emre2021translating}
-localized unsafe Rust code from C2Rust and converted unsafe Rust to
-safe Rust by extracting type and borrow-checker results from the
-\texttt{rustc} compiler. Zhang et al.~\cite{zhang2023ownership}
-converts unsafe Rust from C2Rust to safe Rust by computing an
-ownership scheme for a given Rust program, which decides which
-pointers in a program are owning or non-owning at particular
-locations. Zhang et al.~\cite{zhang2023ownership} evaluates their tool
-CROWN on a benchmark suite of 20 programs, and achieve a median
-reduction rates for raw pointer uses of 62.1\%.  Ling et
-al.~\cite{ling2022rust} removed non-essential ``unsafe'' keywords in
-Rust function signatures and refined the scopes within unsafe block
-scopes to safe functions using code structure transformation. Our work
-is the first to propose a general Rust transpiler that does not depend
-on the source language's memory management properties to produce safe
-Rust.
-\section{Software vulnerability detection}
-Security vulnerability detection has a rich research history covering both static and dynamic techniques (see., e.g., ref~\cite{sokMemory,secVulSurvey,fuzzingSurvey}). 
-For example, code-similarity-based methods~\cite{vuddy, vulpecker} can detect vulnerabilities incurred by code cloning, and pattern-based methods~\cite{neuhaus2007predicting, chucky} use rules to identify vulnerabilities based on code patterns. However, code-similarity techniques show high false negative rates (many vulnerabilities are not caused by cloning), 
-and pattern-based techniques require human experts to define the initial patterns. 
-We focus on work using machine learning for static vulnerability detection, as it is most closely related to ours, requires less human expert intervention, and recent results are especially promising.
+\subsection{LLMs for Code}
 
-Devign~\cite{zhou2019devign} and IVDetect~\cite{ivdetect} used GNN on a program's AST or CFG to learn a program's likelihood to be vulnerable. LineVul~\cite{linevd} queried the final attention layers of a language model (CodeBERT) for the specific purpose of vulnerability detection. 
-DeepDFA~\cite{deepdfa} uses DFA algorithms to train a GNN and achieve state-of-the-art vulnerability detection results more efficiently than prior program analysis based tools. Steenhoek et al.~\cite{deepdfa} observed that DeepDFA, when combined with LineVul~\cite{linevd}, yields a higher vulnerability detection effectiveness than all prior Transformer-based tools.
+Language models have been successfully applied to various code-related tasks including code completion~\cite{desai2016program, inCoder}, code generation from natural language descriptions~\cite{raychev2014code}, and program repair. Large Language Models such as Codex~\cite{Codex}, GPT-Neo~\cite{Neox}, and Llama-2~\cite{Llama} have significantly improved performance on these tasks by scaling up both model parameters and training data.
 
+These models are typically trained on large corpora of source code collected from open-source repositories. The training process teaches the model to predict the next token in a code sequence, which implicitly captures patterns of correct, idiomatic code. As a result, well-trained LLMs tend to assign higher probability (lower entropy) to correct code and lower probability (higher entropy) to buggy or unusual code—a property known as code naturalness~\cite{NAT, hindle2016naturalness}.
 
+The scale of modern LLMs is a key factor in their effectiveness. Models with billions of parameters trained on hundreds of billions of tokens can capture subtle patterns in code structure, naming conventions, and programming idioms. This capability makes them powerful tools for software engineering tasks, though their effectiveness varies depending on whether the task aligns with their training objective of left-to-right generation.
 
-\subsection{\nodejs Package Threat Model}
-\label{sec:background:threat-model}
-\nodejs is %a JavaScript runtime 
-built on top of the V8 JavaScript engine. \nodejs developers combine code into {\em packages}, which
-can import other packages as \emph{dependencies} to use their public APIs (exported functions).
-%
-\nodejs provides powerful \emph{sensitive APIs}~\cite{eval_fn,new_function_fn,exec_fn,execsync_fn} that 
-%allow programmers to perform 
-can dynamically generate code and execute shell commands.
+\section{Program Analysis}
 
-\begin{figure}[t!]
-  \centering
-  \vspace{-3pt}
-  \includegraphics[width=0.5\columnwidth]{figures/approach/attacker_model.pdf}
-  \vspace{-5pt}
-  \caption{Arrows represent a \emph{depends on} relationship.
-    A victim application (Server) passes 
-    attacker-controllable input ($\m{exploit}$) to its vulnerable dependency, 
-    Dep 4 (dataflow indicated by dashed red arrows).}
-  \vspace{-5pt}
-  \label{fig:attacker-model}
-\end{figure}
+Program analysis encompasses a broad range of techniques for automatically reasoning about program behavior and properties. These techniques can be broadly categorized as static analysis (analyzing code without executing it) and dynamic analysis (analyzing program behavior during execution).
 
-In a real-world attack, 
-a \nodejs package that unsafely uses sensitive 
-\nodejs APIs is included as a \emph{dependency} of a \emph{victim} application as illustrated in \figref{fig:attacker-model}.
-An attacker can be any user communicating with the 
-victim application.
-Attacker-controlled input is passed
-from the victim application to the dependency's public API, which passes it to a
-sensitive API (e.g., \lstinline|exec|~\cite{exec_fn}).
-We utilize an idealized model of the above scenario that echoes trust assumptions in prior work~\cite{staicu-SYNODE,nodemedic-fine,cassel2023nodemedic}. 
-The attacker \emph{directly} passes input to the dependency.
-We consider \emph{all} public APIs of the dependency to be the attack surface of the package.
-We scope this work to focus on two types of severe attacks: arbitrary code execution (\gls{ace})~\cite{cwe_94}
-and arbitrary command injection (\gls{aci})~\cite{cwe_77}. An attacker capable of these can launch
-other attacks, e.g., directory traversal~\cite{cwe_22}, by extension.
+\subsection{Static Analysis}
 
-\subsection{Dynamic Taint Analysis}
-Taint analysis specifies and checks policies governing \emph{sensitive 
-dataflow} with programs. A goal of the analysis is to detect flows from particular \emph{sources}, e.g., 
-API inputs, to \emph{sinks}, e.g., functions with dangerous capabilities such as command execution.
-Taint analysis that runs during program execution is termed dynamic
-taint analysis. 
-Dynamic taint analysis has been particularly efficacious for detecting code vulnerabilities of 
-JavaScript (c.f.~\cite{andreasen-Survey}).
+Static analysis examines source code or intermediate representations to infer properties about program behavior without executing the program. Common static analysis techniques include control flow analysis, data flow analysis, and abstract interpretation. These techniques can identify potential bugs, security vulnerabilities, and violations of coding standards.
 
-Several tools perform taint analysis of \nodejs
-packages~\cite{karim-PlatformIndependent,nielsen-Nodest,gauthier-AFFOGATO,song_ObjLupAnsys,ming_taintpipe,jsprime_2013,staicu-Extracting}.
-We focus on leveraging \nodemedicfine~\cite{nodemedic-fine}, which implements a taint
-\emph{provenance analysis}, wherein a history of operations applied to tainted
-data is saved as \emph{provenance graph} (more details in Section~\ref{subsec:provenance-analysis}) and can be used for further analysis. 
-\nodemedicfine uses the provenance graph for synthesizing proof of concept exploit to confirm the vulnerability. 
-This work uses the provenance graph as input to a set of ML methods for vulnerability detection.
+For the work in this dissertation, static analysis techniques are particularly relevant for understanding program structure and data dependencies. Control flow graphs (CFGs) represent the possible execution paths through a program, while data flow analysis tracks how values propagate through variables and operations. These representations provide structured information about program semantics that complements the pattern-based understanding captured by LLMs.
+
+\subsection{Dynamic Analysis}
+
+Dynamic analysis observes program behavior during execution to gather information about actual program states and behaviors. This includes techniques like dynamic taint analysis, which tracks how data flows through a program during execution, and test-based analysis, which uses test execution results to infer program properties.
+
+Dynamic taint analysis is particularly important for security vulnerability detection, as it can track how untrusted input propagates through a program to potentially dangerous operations. This technique labels certain data as "tainted" (e.g., user input) and tracks how this taint spreads through program operations, flagging potential vulnerabilities when tainted data reaches sensitive operations without proper sanitization.
+
+\subsection{Formal Verification}
+
+Formal verification uses mathematical techniques to prove that a program satisfies certain properties or specifications. Unlike testing, which can only demonstrate the presence of bugs in tested scenarios, formal verification can provide guarantees about program correctness for all possible inputs (within the scope of the verification).
+
+Techniques like bounded model checking~\cite{clarke2001bounded, DBLP:conf/tacas/ClarkeKL04} and property-based testing~\cite{fink1997property} can verify specific properties of programs, such as the absence of certain classes of errors or the equivalence of two program implementations. These techniques are particularly valuable when correctness guarantees are essential, such as in the transpilation work presented in this dissertation.
+
+\section{Integration of LLMs and Program Analysis}
+
+A central theme of this dissertation is that LLMs and program analysis techniques have complementary strengths and limitations. LLMs excel at capturing patterns and generating natural, idiomatic code but lack formal understanding of program semantics and correctness. Program analysis provides rigorous reasoning about program properties but may struggle with the flexibility and naturalness that LLMs offer.
+
+By integrating these approaches—using LLMs for their pattern recognition and generation capabilities while employing program analysis for semantic understanding and correctness verification—we can create tools that outperform either approach in isolation. The following chapters demonstrate this integration across multiple software evolution tasks: fault localization (Chapter~\ref{ch:llmao}), automated program repair (Chapter~\ref{ch:entropy}), program transpilation (Chapter~\ref{ch:vert}), and security vulnerability detection (Chapters~\ref{ch:msivd} and~\ref{ch:nodejs}). 
+
 
 
 

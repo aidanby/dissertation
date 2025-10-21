@@ -77,16 +77,22 @@ Note: Chapter 7 (Node.js/NodeMedic) is treated as an extension/application of th
 
 #### 3.1 Restructure Chapter 2
 
-- [ ] Keep only common background:
-  - What are LLMs?
-  - Transformer architecture basics
-  - LLMs for code generation
-  - General program analysis concepts
-- [ ] Move chapter-specific background to respective chapters:
-  - Fault localization background → Chapter 3
-  - APR background → Chapter 4
-  - Transpilation background → Chapter 5
-  - Vulnerability detection background → Chapters 6 & 7
+- [x] Keep only common background:
+  - What are LLMs? ✓
+  - Transformer architecture basics ✓
+  - LLMs for code generation ✓
+  - General program analysis concepts ✓
+  - Static analysis ✓
+  - Dynamic analysis ✓
+  - Formal verification ✓
+  - Integration of LLMs and program analysis ✓
+- [x] Removed chapter-specific background (to be moved to respective chapters):
+  - Fault localization background (removed from Ch 2, needs to be added to Chapter 3)
+  - Patch correctness background (removed from Ch 2, needs to be added to Chapter 4)
+  - Equivalence verification (removed from Ch 2, needs to be added to Chapter 5)
+  - Rust transpilers (removed from Ch 2, needs to be added to Chapter 5)
+  - Software vulnerability detection (removed from Ch 2, needs to be added to Chapters 6 & 7)
+  - Node.js threat model and taint analysis (removed from Ch 2, needs to be added to Chapter 7)
 
 ### 4. Beginning of Each Technical Chapter (Priority: HIGH)
 

@@ -282,16 +282,51 @@ Software engineering is an evolving process, including testing, debugging, and m
 
 \section{Contributions}
 
-This proposal contains a set of prototypes for addressing common software engineering tasks that are apart of a software's evolution.
-My thesis will contribute in the following ways:
-\begin{enumerate}
-\item
-It introduces a fault localization specific LLM, while trained using light-weight bidirectional adapter layers.
-\item
-It shows that the entropy values from various LLMs, when combined with prior APR tools, can improve upon all stages of APR as compared to either a LLM or traditional APR tool in separation.
-\item
-It provides a set of techniques to safe-guard against LLM hallucinations for code-generation, which I evaluate on the task of transpiling to the Rust programming language.
-\end{enumerate}
+This dissertation presents a comprehensive investigation of integrating Large Language Models with program analysis techniques for software evolution. Through four major contributions, I demonstrate that hybrid neural-symbolic approaches consistently outperform pure neural or symbolic methods across multiple software maintenance tasks. Each contribution was novel at the time of publication and has been empirically validated on real-world software systems.
+
+\subsection{Bidirectional Fine-Tuning for Fault Localization}
+
+I introduce LLMAO (Large Language Models for Fault Localization), a novel approach that enables test-free fault localization through bidirectional adapter fine-tuning~\cite{Llmao}. While state-of-the-art LLMs are trained in a left-to-right manner for code generation, this training paradigm limits their effectiveness for discriminative tasks like fault localization, where understanding the full context of code is essential. LLMAO addresses this limitation by training lightweight bidirectional adapters on top of frozen left-to-right language models, adding relatively few parameters while enabling the model to leverage bidirectional context for identifying faulty code.
+
+The key novelty of this work lies in demonstrating that pretrained left-to-right language models already contain rich representations about code suspiciousness, which can be effectively leveraged through bidirectional adapters trained on small datasets of real bugs. Unlike traditional fault localization techniques that rely on test execution and coverage information, LLMAO operates without any test cases, making it applicable to scenarios where tests are unavailable or of poor quality. This test-free approach also enables LLMAO to detect runtime security vulnerabilities that may not be covered by existing test suites.
+
+I evaluate LLMAO on three benchmark datasets: 395 bugs from Defects4J (Java), 493 bugs from BugsInPy (Python), and 5,260 security vulnerabilities from Devign (C). The results demonstrate that LLMAO outperforms existing state-of-the-art deep learning-based fault localization techniques including DeepFL, GRACE, and TransferFL across all benchmarks. The approach requires significantly less data preprocessing overhead compared to prior work and can be easily adapted to different programming languages by replacing the underlying pretrained model.
+
+\textbf{Artifact:} The implementation and datasets are available at \url{https://github.com/squaresLab/LLMAO}.
+
+\subsection{Entropy-Based Uncertainty Quantification for Automated Program Repair}
+
+I demonstrate that LLM entropy values—a measure of model uncertainty during generation—can be leveraged to improve all three critical stages of automated program repair: fault localization, patch testing efficiency, and plausible patch ranking~\cite{yang2024revisiting}. This work revisits the concept of code naturalness in the era of large language models, showing that while LLMs perceive buggy code as unnatural (high entropy) and tend to generate natural (low entropy) correct code, this property can be systematically exploited beyond simple patch generation.
+
+The novelty of this contribution lies in introducing the concept of "entropy-delta"—the change in code naturalness when a patch is applied—and demonstrating its utility across the entire APR pipeline. For patch generation efficiency, I show that using entropy to prioritize candidate patches for testing reduces the average number of patches that must be evaluated by 24 patches per bug. For patch correctness assessment, entropy-based ranking achieves 49\% better Top-1 accuracy compared to the state-of-the-art patch ranker Shibboleth, without requiring any project-specific training data.
+
+Importantly, this work establishes that combining LLM capabilities with traditional APR techniques produces superior results compared to using either approach in isolation. The entropy-based approach is agnostic to the patch generation method (template-based, symbolic, or ML-based) and can be applied to patches produced by any APR tool. I evaluate this approach on the Defects4J benchmark, demonstrating consistent improvements across multiple APR stages and showing that the technique remains effective for patches produced by modern ML-based repair tools.
+
+\textbf{Artifact:} The implementation and experimental data are available at \url{https://github.com/squaresLab/entropy-apr-replication}.
+
+\subsection{Verified Equivalent Rust Transpilation with LLMs}
+
+I present VERT (Verified Equivalent Rust Transpilation), a novel framework that combines LLMs with formal verification to produce functionally correct and idiomatic Rust code from source programs in other languages~\cite{vert}. While LLM-based transpilation approaches typically produce more natural and maintainable code than rule-based transpilers, they provide no guarantees about correctness. Conversely, rule-based transpilers like C2Rust can theoretically produce correct transpilations but often generate unidiomatic code that relies heavily on Rust's unsafe subset.
+
+VERT bridges this gap by using LLMs for initial code generation while employing formal verification to ensure correctness. The key innovation is a dual-path verification approach: VERT generates both an LLM-produced Rust transpilation and a reference implementation compiled through WebAssembly (Wasm), then uses equivalence checking to verify that both implementations produce identical outputs. This approach requires only that a WebAssembly compiler exists for the source language, making it applicable to most major programming languages.
+
+The framework includes an automatic repair system that uses Rust compiler error messages to iteratively fix common compilation errors in LLM-generated code, including syntax errors, type mismatches, and domain-specific issues. This repair mechanism significantly reduces the need for LLM regeneration while maintaining the naturalness of the generated code.
+
+I evaluate VERT on real-world Go repositories, demonstrating that it achieves 100\% functional correctness through formal verification while producing code that is more idiomatic and maintainable than code generated by C2Rust. The evaluation shows that VERT successfully transpiles complex real-world functions while maintaining both correctness guarantees and code quality.
+
+\textbf{Artifact:} The VERT implementation and evaluation benchmarks are available at \url{https://github.com/YoshikiTakashima/vert}.
+
+\subsection{Multi-Task Security Vulnerability Detection}
+
+I extend the fault localization work to security vulnerability detection through multi-task instruction-tuning of LLMs, addressing key limitations of line-level fault localization for security vulnerabilities that often span multiple files~\cite{yang2024security}. This work introduces MSIVD (Multi-task Self-Instruct Vulnerability Detection), which trains LLMs to simultaneously identify vulnerable code and explain exploitation vectors, enabling more comprehensive vulnerability detection across large repositories.
+
+The novelty of this contribution lies in three key innovations: (1) a self-instruct dialogue-based data augmentation approach that transforms classification-based vulnerability datasets into multi-round conversations between teacher and student, enabling chain-of-thought reasoning; (2) multi-task learning that jointly optimizes for vulnerability detection and explanation generation, allowing the model to learn shared knowledge and patterns that improve generalization; and (3) integration with graph neural networks (GNNs) based on control flow information to capture non-local and subtle information flow patterns essential for security vulnerability detection.
+
+To address concerns about data contamination in LLM evaluation, I curate a novel vulnerability dataset with samples exclusively filtered to be vulnerabilities identified after the pre-trained model's training cutoff date. This ensures that evaluation results reflect genuine model capabilities rather than memorization of training data.
+
+I evaluate MSIVD on established vulnerability datasets (BigVul and PreciseBugs) as well as the novel post-training-cutoff dataset, demonstrating state-of-the-art performance. The multi-task learning approach shows significant improvements over single-task vulnerability detection, and the integration with GNNs enables effective detection of vulnerabilities that span across multiple files and functions.
+
+\textbf{Artifact:} The MSIVD implementation, datasets, and trained models are available at \url{https://github.com/squaresLab/multitask-vuln-paper}.
 
 
 

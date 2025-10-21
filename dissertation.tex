@@ -432,6 +432,10 @@ Models trained in this way are less suitable for token-level discriminative task
 We present a promising alternative: we train lightweight bidirectional \emph{adapters}, themselves small models of the same architecture as the base LLM, on top of left-to-right language models. These adapters add relatively few parameters and can be trained effectively on small datasets of real bugs, such as \textit{Defects4J}~\cite{just2014defects4j}, without updating the underlying LLM. We demonstrate that the representations learned by pretrained left-to-right language models already contain a wealth of knowledge about the suspiciousness of lines of code, which increases strongly with the size of the LLM.  I can leverage this power through our adapters to find bugs while requiring just a few hundred training samples for pretraining. 
 our approach yields better fault localization performance than prior work while requiring significantly less data preprocessing overhead. Importantly, our approach does not use test cases at all, and therefore does not depend on test code quality for its performance. 
 
+\section{Related Work}
+
+Prior fault localization tools use test output information, code semantics, and naturalness of code to achieve a high degree of confidence on bug detection. Spectrum-based Fault Localization (SBFL)~\cite{abreu2006evaluation, abreu2007accuracy} uses a ratio of passed and failed tests covering each line of code to calculate its suspiciousness score, in which a higher suspiciousness signifies a higher probability of being faulty. Recent advances in deep learning created a spur of research on using graph neural networks (GNNs)~\cite{GNN} for fault localization. GRACE~\cite{Grace}, DeepFL~\cite{DeepFL}, and DEAR~\cite{Dear} encode the code AST and test coverage as graph representations before training deep learning models for fault localization. TransferFL~\cite{TransferFL} combined semantic features of code and the transferred knowledge from open-source code data to improve the accuracy of prior deep learning fault localization tools.
+
 \section{LLMAO: Large Language Models for Fault Localization}
 \label{sec:LLMAO}
 
@@ -798,6 +802,12 @@ are typically trained on the same test suites used for patch generation,
 imposing a project-specific training burden (and an expensive one, when dynamic
 signals are required), and posing a significant risk of overfitting~\cite{CURE, yang2023large}.  
 I show that entropy can rank correct patches 49\% more effectively (in Top-1) than state-of-the-art patch ranker Shibboleth~\cite{Shibboleth}, without using any project-specific training data.
+
+\section{Related Work}
+
+Prior patch disambiguation tools leverage test output information and code information (both code syntax and code semantics) for ranking or classifying patches. Qi et al.~\cite{qi2015analysis} analyzed the reported bugs of three generate-and-validate APR tools: GenProg~\cite{genprog}, RSRepair~\cite{rsrepair}, and AE~\cite{ae} systems, to find that producing correct results on a validation test suite is not enough to ensure patch correctness. Smith et al.~\cite{CURE} performed an experiment that interrogates whether or not automatically generated patches are prone to overfitting to their test suite. Borrowing the concept of training and test sets from machine learning, they found that automated program repair (APR) typically used the same test-suite for both ``training" (generating the patch), and ``testing" (validation). Smith et al. found that both the coverage rate of the test-suite, as well as the assignment of test/train sets between the two suites, impact the degree of overfitting in repair.
+
+To counteract the overfitting problem, Ye et al.~\cite{ye_patches} proposed ODS (Overfitting Detection System), a novel system to statically classify overfitting patches. Xiong et al.~\cite{patch-sim} generated both execution traces of patched programs and new tests to assess the correctness of patches. Ghanbari et al.~\cite{Shibboleth} used both the syntactic and semantic similarity between original code and proposed patch, and code coverage of passing tests to rank patches. Shibboleth~\cite{Shibboleth} was able to rank the correct patch in Top-1 and Top-2 positions in 66\% of their curated dataset. Tian et al.~\cite{Panther} proposed machine learning predictor with BERT transformer-based learned embeddings for patch classification. Tian et al. found that learned embeddings of code fragments with BERT~\cite{BERT}, CC2Vec~\cite{cc2vec}, and Doc2Vec~\cite{doc2vec} yield similarity scores that, given a buggy code, substantially differ between correctly-patched code and incorrectly-patched one. Yang et al.~\cite{yang2023large} found that state-of-the-art learning-based techniques suffered from the dataset overfitting problem, and that naturalness-based techniques outperformed traditional static techniques, in particular Patch-Sim~\cite{patch-sim}.
 
 \section{LLM Entropy for APR}
 \begin{figure*}[t]
@@ -1260,6 +1270,18 @@ the Rust language. On the other hand, while LLM-based approaches typically produ
 
 In this work, we propose VERT (verified equivalent Rust transpilation with LLMs), a tool that can produce idiomatic Rust transpilations with formal guarantees of correctness. VERT's only requirement is that there is Web
 Assembly compiler for the source language, which is true for most major languages. 
+
+\section{Related Work}
+
+\subsection{Equivalence Verification}
+
+Equivalence verification has been studied in settings where two copies of should-be-equivalent artifacts are available: compiler optimizations~\cite{churchill_semantic_2019,churchill_sound_2017} and program verification~\cite{antonopoulos_algebra_2023,kommrusch_self-supervised_2023}. Our work uses equivalence verification for program language translation.
+
+\subsection{Rust Transpilers}
+
+Prior Rust transpilers convert C/C++ to Rust. C2Rust~\cite{C2Rust} automatically converts large-scale C programs to Rust while preserving C semantics. Citrus~\cite{citrus} and Bindgen~\cite{bindgen} both generate Rust FFI bindings from C libraries, and produce Rust code without preserving C semantics. Bosamiya et al.~\cite{bosamiya2022provably} embedded WebAssembly (Wasm) semantics in safe Rust code for the Rust compiler to emit safe and executable Rust code. Bosamiya et al.~\cite{bosamiya2022provably} implemented all stages of their tool in safe Rust, and no stage of compiler needs to be further verified or trusted to achieve safety.
+
+Existing tools for making unsafe Rust safer focus on converting raw pointers to safe references. Emre et al.~\cite{emre2021translating} localized unsafe Rust code from C2Rust and converted unsafe Rust to safe Rust by extracting type and borrow-checker results from the \texttt{rustc} compiler. Zhang et al.~\cite{zhang2023ownership} converts unsafe Rust from C2Rust to safe Rust by computing an ownership scheme for a given Rust program, which decides which pointers in a program are owning or non-owning at particular locations. Zhang et al.~\cite{zhang2023ownership} evaluates their tool CROWN on a benchmark suite of 20 programs, and achieve a median reduction rates for raw pointer uses of 62.1\%. Ling et al.~\cite{ling2022rust} removed non-essential ``unsafe'' keywords in Rust function signatures and refined the scopes within unsafe block scopes to safe functions using code structure transformation. Our work is the first to propose a general Rust transpiler that does not depend on the source language's memory management properties to produce safe Rust.
 
 \section{VERT: Verified Equivalent Rust Transpilation with LLMs}
 \label{section:methodology}
@@ -1828,6 +1850,12 @@ Finally I propose our tool \textit{MSIVD}: a multitask self-instruction LLM mode
 \label{fig:multivuln_overview}
 \end{figure*}
 
+\section{Related Work}
+
+Security vulnerability detection has a rich research history covering both static and dynamic techniques (see., e.g., ref~\cite{sokMemory,secVulSurvey,fuzzingSurvey}). For example, code-similarity-based methods~\cite{vuddy, vulpecker} can detect vulnerabilities incurred by code cloning, and pattern-based methods~\cite{neuhaus2007predicting, chucky} use rules to identify vulnerabilities based on code patterns. However, code-similarity techniques show high false negative rates (many vulnerabilities are not caused by cloning), and pattern-based techniques require human experts to define the initial patterns. We focus on work using machine learning for static vulnerability detection, as it is most closely related to ours, requires less human expert intervention, and recent results are especially promising.
+
+Devign~\cite{zhou2019devign} and IVDetect~\cite{ivdetect} used GNN on a program's AST or CFG to learn a program's likelihood to be vulnerable. LineVul~\cite{linevd} queried the final attention layers of a language model (CodeBERT) for the specific purpose of vulnerability detection. DeepDFA~\cite{deepdfa} uses DFA algorithms to train a GNN and achieve state-of-the-art vulnerability detection results more efficiently than prior program analysis based tools. Steenhoek et al.~\cite{deepdfa} observed that DeepDFA, when combined with LineVul~\cite{linevd}, yields a higher vulnerability detection effectiveness than all prior Transformer-based tools.
+
 \section{MSIVD}
 
 Figure~\ref{fig:multivuln_overview} provides an overview of MSIVD. The first three phases constitute training; the fourth phase, inference/vulnerability detection.
@@ -2158,12 +2186,20 @@ Our results indicate that
 both traditional machine learning models and LLMs when combined with program analysis tools can predict Node.js package exploitability with high accuracy.
 Our work provides insights into the effectiveness and challenges of using LLMs for vulnerability detection in JavaScript packages.
 
+\section{Background and Related Work}
 
+\subsection{Node.js Package Threat Model}
+\label{sec:background:threat-model}
 
+Node.js is built on top of the V8 JavaScript engine. Node.js developers combine code into {\em packages}, which can import other packages as \emph{dependencies} to use their public APIs (exported functions). Node.js provides powerful \emph{sensitive APIs}~\cite{eval_fn,new_function_fn,exec_fn,execsync_fn} that can dynamically generate code and execute shell commands.
 
+In a real-world attack, a Node.js package that unsafely uses sensitive Node.js APIs is included as a \emph{dependency} of a \emph{victim} application. An attacker can be any user communicating with the victim application. Attacker-controlled input is passed from the victim application to the dependency's public API, which passes it to a sensitive API (e.g., \lstinline|exec|~\cite{exec_fn}). We utilize an idealized model of the above scenario that echoes trust assumptions in prior work~\cite{staicu-SYNODE,nodemedic-fine,cassel2023nodemedic}. The attacker \emph{directly} passes input to the dependency. We consider \emph{all} public APIs of the dependency to be the attack surface of the package. We scope this work to focus on two types of severe attacks: arbitrary code execution (\gls{ace})~\cite{cwe_94} and arbitrary command injection (\gls{aci})~\cite{cwe_77}. An attacker capable of these can launch other attacks, e.g., directory traversal~\cite{cwe_22}, by extension.
 
+\subsection{Dynamic Taint Analysis}
 
+Taint analysis specifies and checks policies governing \emph{sensitive dataflow} with programs. A goal of the analysis is to detect flows from particular \emph{sources}, e.g., API inputs, to \emph{sinks}, e.g., functions with dangerous capabilities such as command execution. Taint analysis that runs during program execution is termed dynamic taint analysis. Dynamic taint analysis has been particularly efficacious for detecting code vulnerabilities of JavaScript (c.f.~\cite{andreasen-Survey}).
 
+Several tools perform taint analysis of Node.js packages~\cite{karim-PlatformIndependent,nielsen-Nodest,gauthier-AFFOGATO,song_ObjLupAnsys,ming_taintpipe,jsprime_2013,staicu-Extracting}. We focus on leveraging NodeMedic-fine~\cite{nodemedic-fine}, which implements a taint \emph{provenance analysis}, wherein a history of operations applied to tainted data is saved as \emph{provenance graph} and can be used for further analysis. NodeMedic-fine uses the provenance graph for synthesizing proof of concept exploit to confirm the vulnerability. This work uses the provenance graph as input to a set of ML methods for vulnerability detection.
 
 \section{NODEMEDIC-LLM}
 In this work, we conduct a comprehensive evaluation of LLM-based methods, program analysis-based methods, ML-enhanced program analysis methods, and a hybrid approach that combines LLMs, \nodemedicfine, and GNNs for detecting vulnerabilities in JavaScript code.

@@ -426,13 +426,16 @@ Sink Type         & \texttt{spawn} or \texttt{exec}. \\ \bottomrule
 
 Debugging is an important step in the software maintenance process, and the first step in debugging is finding where the bug occurs in a software repository.
 As described in Chapter~\ref{ch:intro}, fault localization (FL) approaches aim to automatically identify which program entities (like a line, statement, module, or file) are implicated in a particular bug. The goal is to assist programmers in fixing defects by pinpointing the places in the code base that should be modified to fix them. 
+
+This chapter addresses a fundamental limitation of LLMs for software maintenance tasks. While LLMs excel at code generation through left-to-right prediction, this training paradigm limits their effectiveness for discriminative tasks like fault localization. As stated in our thesis, LLMs trained on causal code generation lack the holistic understanding required for identifying buggy code. This chapter demonstrates that augmenting LLMs with bidirectional understanding (i.e., a form of program analysis that considers both prefix and suffix context) enables effective fault localization without requiring test cases.
+
 However, LLMs are not immediately suited off-the-shelf for coding tasks that do not involve code generation, like fault localization. State-of-the-art LLMs for code~\cite{chen2021evaluating, black2021gpt, tunstall2022natural, nijkamp2022codegen} are trained to generate code in a left-to-right manner, with each token predicted from its preceding context. 
 Models trained in this way are less suitable for token-level discriminative tasks, like line-level fault localization, because the representation for any given token is only conditioned on the context to the left. 
 
 We present a promising alternative: we train lightweight bidirectional \emph{adapters}, themselves small models of the same architecture as the base LLM, on top of left-to-right language models. These adapters add relatively few parameters and can be trained effectively on small datasets of real bugs, such as \textit{Defects4J}~\cite{just2014defects4j}, without updating the underlying LLM. We demonstrate that the representations learned by pretrained left-to-right language models already contain a wealth of knowledge about the suspiciousness of lines of code, which increases strongly with the size of the LLM.  I can leverage this power through our adapters to find bugs while requiring just a few hundred training samples for pretraining. 
 our approach yields better fault localization performance than prior work while requiring significantly less data preprocessing overhead. Importantly, our approach does not use test cases at all, and therefore does not depend on test code quality for its performance. 
 
-\section{Related Work}
+\section{Background and Related Work}
 
 Prior fault localization tools use test output information, code semantics, and naturalness of code to achieve a high degree of confidence on bug detection. Spectrum-based Fault Localization (SBFL)~\cite{abreu2006evaluation, abreu2007accuracy} uses a ratio of passed and failed tests covering each line of code to calculate its suspiciousness score, in which a higher suspiciousness signifies a higher probability of being faulty. Recent advances in deep learning created a spur of research on using graph neural networks (GNNs)~\cite{GNN} for fault localization. GRACE~\cite{Grace}, DeepFL~\cite{DeepFL}, and DEAR~\cite{Dear} encode the code AST and test coverage as graph representations before training deep learning models for fault localization. TransferFL~\cite{TransferFL} combined semantic features of code and the transferred knowledge from open-source code data to improve the accuracy of prior deep learning fault localization tools.
 
@@ -747,6 +750,9 @@ As a first step in using LLMs for maintaining software evolution, we propose bid
 \chapter{Automated Program Repair}
 \label{ch:entropy}
 Automated Program Repair (APR) aims to help software engineers automatically patch software bugs. Although LLMs can immediately be used as code generators, it remains unclear how LLMs can be used as bug patchers.
+
+This chapter demonstrates how LLM uncertainty can serve as a valuable program analysis signal for automated program repair. Building on the thesis that integrating LLMs with program analysis produces superior results, this work shows that entropy (i.e., a measure of LLM uncertainty) can guide traditional APR techniques at all three stages: fault localization, patch generation efficiency, and patch correctness assessment. Rather than replacing traditional APR or using LLMs in isolation, this chapter establishes that quantifying LLM confidence through entropy provides a complementary signal that improves repair effectiveness and efficiency.
+
 In this chapter, we argue that LLMs can be powerful tools for APR when combined with prior traditional APR techniques. When used correctly, LLMs can save both software testing time and manual patch selection time.
 
 LLMs are trained on large volumes of code in which defects are relatively
@@ -803,7 +809,7 @@ imposing a project-specific training burden (and an expensive one, when dynamic
 signals are required), and posing a significant risk of overfitting~\cite{CURE, yang2023large}.  
 I show that entropy can rank correct patches 49\% more effectively (in Top-1) than state-of-the-art patch ranker Shibboleth~\cite{Shibboleth}, without using any project-specific training data.
 
-\section{Related Work}
+\section{Background and Related Work}
 
 Prior patch disambiguation tools leverage test output information and code information (both code syntax and code semantics) for ranking or classifying patches. Qi et al.~\cite{qi2015analysis} analyzed the reported bugs of three generate-and-validate APR tools: GenProg~\cite{genprog}, RSRepair~\cite{rsrepair}, and AE~\cite{ae} systems, to find that producing correct results on a validation test suite is not enough to ensure patch correctness. Smith et al.~\cite{CURE} performed an experiment that interrogates whether or not automatically generated patches are prone to overfitting to their test suite. Borrowing the concept of training and test sets from machine learning, they found that automated program repair (APR) typically used the same test-suite for both ``training" (generating the patch), and ``testing" (validation). Smith et al. found that both the coverage rate of the test-suite, as well as the assignment of test/train sets between the two suites, impact the degree of overfitting in repair.
 
@@ -1259,6 +1265,9 @@ in model over-fitting and training data leakage.
 \label{ch:vert}
 A common component of software evolution is program translation, whether between platforms, software versions, or programming languages. Specifically, translating from one programming to another while directly compiling the target program is called program transpilation.
 One key difficulty in program transpilation is producing idiomatic code.
+
+This chapter addresses a critical challenge in using LLMs for code transformation. While LLMs can generate idiomatic code, they provide no correctness guarantees. This work demonstrates that formal verification (i.e., a form of program analysis) is essential for ensuring LLM-generated transpilations preserve program semantics. Supporting the thesis that hybrid approaches outperform pure neural or symbolic methods, this chapter shows that combining LLM-based generation with equivalence verification via WebAssembly achieves both idiomaticity and functional correctness, a combination neither approach achieves alone.
+
 In this chapter, we design, implement, and evaluate a LLM-based transpilation tool, and show that it is more idiomatic than prior non-LLM transpilers. Specifically, we use the Rust programming language as a case-study for our target transpiling language.
 
 Rust is a programming language that combines memory safety and
@@ -1271,7 +1280,7 @@ the Rust language. On the other hand, while LLM-based approaches typically produ
 In this work, we propose VERT (verified equivalent Rust transpilation with LLMs), a tool that can produce idiomatic Rust transpilations with formal guarantees of correctness. VERT's only requirement is that there is Web
 Assembly compiler for the source language, which is true for most major languages. 
 
-\section{Related Work}
+\section{Background and Related Work}
 
 \subsection{Equivalence Verification}
 
@@ -1830,6 +1839,8 @@ In this work, we study the combination of LLMs and formal verification to transp
 \label{ch:msivd}
 Software security vulnerabilities allow attackers to perform malicious activities to disrupt software operations (i.e., security exploits). Since security exploits often occur during runtime, the independence of tests for LLM-based vulnerability detection shows promise.
 
+This chapter extends the fault localization approach from Chapter~\ref{ch:llmao} to multi-file, security-focused scenarios. While Chapter~\ref{ch:llmao} demonstrated test-free fault localization for single functions, security vulnerabilities often span multiple functions and files, requiring a more holistic understanding of program properties. This work demonstrates that multi-task learning (i.e., training LLMs simultaneously on vulnerability detection and explanation generation) combined with static analysis through graph neural networks enables effective vulnerability detection on larger codebases. This approach exemplifies the thesis by showing how program analysis (e.g., dataflow graphs) augments LLM capabilities for complex software maintenance tasks.
+
 The nuances of security vulnerabilities have been a pain-point for prior static analysis and machine learning vulnerability detection tools. The specific properties of security vulnerabilities lead me to believe that the attention-based LLMs can leverage these nuances for greater detection effectiveness. Importantly, the presence of rich, detailed vulnerability explanations available online leads me to believe a LLM can gain an understanding of how and why vulnerability can exist, and how that could lead to a security exploit. 
 
 As described in Chapter~\ref{ch:llmao}, Chapter~\ref{ch:entropy}, LLM can be a powerful tool for all stages of automated program repair: fault localization, patch generation, and plausible patch ranking. One opportunity from LLMAO is the capability of LLMs to perform security vulnerability detection without the usage of tests. 
@@ -1850,7 +1861,7 @@ Finally I propose our tool \textit{MSIVD}: a multitask self-instruction LLM mode
 \label{fig:multivuln_overview}
 \end{figure*}
 
-\section{Related Work}
+\section{Background and Related Work}
 
 Security vulnerability detection has a rich research history covering both static and dynamic techniques (see., e.g., ref~\cite{sokMemory,secVulSurvey,fuzzingSurvey}). For example, code-similarity-based methods~\cite{vuddy, vulpecker} can detect vulnerabilities incurred by code cloning, and pattern-based methods~\cite{neuhaus2007predicting, chucky} use rules to identify vulnerabilities based on code patterns. However, code-similarity techniques show high false negative rates (many vulnerabilities are not caused by cloning), and pattern-based techniques require human experts to define the initial patterns. We focus on work using machine learning for static vulnerability detection, as it is most closely related to ours, requires less human expert intervention, and recent results are especially promising.
 
@@ -2173,6 +2184,8 @@ Our tool surpasses prior state-of-the-art results on established vulnerability d
 
 \chapter{Node.js Vulnerability Detection with Program Analysis and pretrained LLMs}
 \label{ch:nodejs}
+
+This chapter demonstrates the value of integrating dynamic program analysis with LLMs for vulnerability detection. While Chapter~\ref{ch:msivd} used static dataflow analysis, this work leverages dynamic taint analysis to construct provenance graphs that capture the complete history of operations on tainted data during execution. This represents a deeper form of program analysis that tracks not just what data flows where, but how it is transformed. By combining these provenance graphs with LLMs and traditional machine learning models, this chapter provides further evidence for the thesis that hybrid neural-symbolic approaches consistently outperform pure neural or symbolic methods for software maintenance tasks.
 
 As discussed in Chapter~\ref{ch:msivd}, we aim to improve the vulnerability detector from Chapter~\ref{ch:llmao} for larger, real-world repositories. Chapter~\ref{ch:msivd} extends \textit{LLMAO} with \textit{MSIVD}, which addresses the key limitation of context window sizing. \textit{MSIVD} leverages the data flow analysis (DFA) of a program into trainable objectives for LLM-based vulnerability detection. DFA tracks how data moves through program variables by capturing control flow and data dependencies. However, not all information passed across a repository is represented by variables. A more specific static analysis technique is the creation of \textit{provenance graphs}. Provenance graphs track data origins and transformations, and focuses on capturing relationships between data artifacts and processes. Provenance graphs investigate the ``why'' and ``how'' of data transformations, which are necessary for uncovering certain exploits. In this work, we further extend our previous vulnerability detector with provenance graphs, which are constructed through dynamic taint analysis that capture the
 complete history of operations applied to tainted values during a program’s execution. Each node in a provenance graph represents a taint-related operation or value, while edges illustrate the flow of data between these nodes.

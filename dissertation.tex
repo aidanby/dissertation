@@ -298,7 +298,7 @@ I evaluate LLMAO on three benchmark datasets: 395 bugs from Defects4J (Java), 49
 
 I demonstrate that LLM entropy values—a measure of model uncertainty during generation—can be leveraged to improve all three critical stages of automated program repair: fault localization, patch testing efficiency, and plausible patch ranking~\cite{yang2024revisiting}. This work revisits the concept of code naturalness in the era of large language models, showing that while LLMs perceive buggy code as unnatural (high entropy) and tend to generate natural (low entropy) correct code, this property can be systematically exploited beyond simple patch generation.
 
-The novelty of this contribution lies in introducing the concept of "entropy-delta"—the change in code naturalness when a patch is applied—and demonstrating its utility across the entire APR pipeline. For patch generation efficiency, I show that using entropy to prioritize candidate patches for testing reduces the average number of patches that must be evaluated by 24 patches per bug. For patch correctness assessment, entropy-based ranking achieves 49\% better Top-1 accuracy compared to the state-of-the-art patch ranker Shibboleth, without requiring any project-specific training data.
+The novelty of this contribution lies in introducing the concept of ``entropy-delta''—the change in code naturalness when a patch is applied—and demonstrating its utility across the entire APR pipeline. For patch generation efficiency, I show that using entropy to prioritize candidate patches for testing reduces the average number of patches that must be evaluated by 24 patches per bug. For patch correctness assessment, entropy-based ranking achieves 49\% better Top-1 accuracy compared to the state-of-the-art patch ranker Shibboleth, without requiring any project-specific training data.
 
 Importantly, this work establishes that combining LLM capabilities with traditional APR techniques produces superior results compared to using either approach in isolation. The entropy-based approach is agnostic to the patch generation method (template-based, symbolic, or ML-based) and can be applied to patches produced by any APR tool. I evaluate this approach on the Defects4J benchmark, demonstrating consistent improvements across multiple APR stages and showing that the technique remains effective for patches produced by modern ML-based repair tools.
 
@@ -370,7 +370,7 @@ For the work in this dissertation, static analysis techniques are particularly r
 
 Dynamic analysis observes program behavior during execution to gather information about actual program states and behaviors. This includes techniques like dynamic taint analysis, which tracks how data flows through a program during execution, and test-based analysis, which uses test execution results to infer program properties.
 
-Dynamic taint analysis is particularly important for security vulnerability detection, as it can track how untrusted input propagates through a program to potentially dangerous operations. This technique labels certain data as "tainted" (e.g., user input) and tracks how this taint spreads through program operations, flagging potential vulnerabilities when tainted data reaches sensitive operations without proper sanitization.
+Dynamic taint analysis is particularly important for security vulnerability detection, as it can track how untrusted input propagates through a program to potentially dangerous operations. This technique labels certain data as ``tainted'' (e.g., user input) and tracks how this taint spreads through program operations, flagging potential vulnerabilities when tainted data reaches sensitive operations without proper sanitization.
 
 \subsection{Formal Verification}
 
@@ -1871,29 +1871,29 @@ Figure~\ref{code:dialogue} shows a complete dialogue training data entry example
 \centering
 \begin{lstlisting}[numbersep=5pt,xleftmargin=21pt,numberstyle=\scriptsize,basicstyle=\footnotesize\ttfamily,firstnumber=1, language=C, language=C]
 Round 0 = {
-  role: "System",
+  role: ``System'',
   content: "You are an expert in detecting and locating security vulnerabilities, and can 
     help answer vulnerability questions", 
 },
 Round 1 = {
-  role = "Student",
+  role = ``Student'',
   content = f"Does the following code have any security vulnerabilities: {code_snippet}",
 
-  role = "Teacher",
+  role = ``Teacher'',
   content = f"Yes. The following code has a vulnerability type {cwe_type}.",
 },
 Round 2 = {
-  role = "Student",
+  role = ``Student'',
   content = f"What is the vulnerability description?",
 
-  role = "Teacher",
+  role = ``Teacher'',
   content =f"The vulnerability is:{commit_msg}",
 }    
 Round 3 = {
-  role = "Student",
+  role = ``Student'',
   content = f"Locate the lines that are vulnerable and should be repaired.",
 
-  role = "Teacher",
+  role = ``Teacher'',
   content = f"The code is vulnerable at lines {vuln_lines}, with the following fix: {fixing_code}",
 }
 \end{lstlisting}
@@ -2105,7 +2105,7 @@ We also see that training with multi-round SIFT yields higher F1 scores than sin
 
 \begin{table}[t!]
   \centering
-\caption{\small \textit{MSIVD} ablation study. ``Pre-trained" uses the underlying LLM directly for vulnerability detection. ``Label-only fine-tuned'' (FT) performs single-task fine-tuning on the vulnerability classification labels. ``Single round self-instruct fine-tuned (SIFT)'' trains the LLM without the agent explanation multi-round dialogue. ``Multi-round SIFT'' uses multi-task agent-dialogue fine-tuning (\textit{MSIVD}$^{-}$). ``Multi-round SIFT + GNN'' adds the GNN adapter layer and corresponds to the full version of \textit{MSIVD}.
+\caption{\small \textit{MSIVD} ablation study. ``Pre-trained'' uses the underlying LLM directly for vulnerability detection. ``Label-only fine-tuned'' (FT) performs single-task fine-tuning on the vulnerability classification labels. ``Single round self-instruct fine-tuned (SIFT)'' trains the LLM without the agent explanation multi-round dialogue. ``Multi-round SIFT'' uses multi-task agent-dialogue fine-tuning (\textit{MSIVD}$^{-}$). ``Multi-round SIFT + GNN'' adds the GNN adapter layer and corresponds to the full version of \textit{MSIVD}.
 }
 
 \begin{tabular}{l|lrrr}
@@ -2284,9 +2284,9 @@ For this evaluation, we prompt the LLM with a common query:
 \end{tcolorbox}
 
 For models that can run locally, we disable sampling during generation to ensure deterministic results. For some models that require a cloud-based API, the classification responses may vary slightly across multiple runs. 
-Even though we instruct the model to output only "Yes" and "No," for models trained on a Chain-of-Thought (CoT) objective \cite{wei2022chain}, the model may still produce extra text wrapped in special tokens as part of the reasoning process before the final answer. We ignore these additional tokens and only consider the final answer.
+Even though we instruct the model to output only ``Yes'' and ``No,'' for models trained on a Chain-of-Thought (CoT) objective \cite{wei2022chain}, the model may still produce extra text wrapped in special tokens as part of the reasoning process before the final answer. We ignore these additional tokens and only consider the final answer.
 %
-The outputs are filtered based on the presence of ''Yes'' which is considered vulnerable, while all other cases, including those that generate neither "Yes" nor "No," are considered non-vulnerable.
+The outputs are filtered based on the presence of ``Yes'' which is considered vulnerable, while all other cases, including those that generate neither ``Yes'' nor ``No,'' are considered non-vulnerable.
 
 \subsubsection{Fine-Tuning on a Classification Head \textup{(\ding{173} in Figure \ref{fig:nodemedic})}}
 
@@ -2551,7 +2551,7 @@ Our experiments show that the performance of LLMs in the vulnerability detection
 In a zero-shot setting, OpenAI's o3-mini-high model achieves an F1 score of 0.733, which is lower than five out of the seven other models we evaluated for the zero-shot scenario.
 However, its metrics—specifically, high precision and moderate recall—are quite similar to those achieved by pure program analysis methods like \nodemedicfine. This suggests that the model tends to be conservative in its predictions.
 
-Among other zero-shot LLMs, all models show fairly similar results, except for DeepSeek-R1-Distill-Qwen-7B and Qwen2.5-Coder-7B-Instruct, which have significantly lower F1 scores. DeepSeek-R1-Distill-Qwen-7B, in particular, sometimes outputs a final answer that contradicts its prior reasoning. The following are two examples where, during the reasoning, the model believes the code is exploitable, but the final answer is "no," and in the other example, it is the opposite.
+Among other zero-shot LLMs, all models show fairly similar results, except for DeepSeek-R1-Distill-Qwen-7B and Qwen2.5-Coder-7B-Instruct, which have significantly lower F1 scores. DeepSeek-R1-Distill-Qwen-7B, in particular, sometimes outputs a final answer that contradicts its prior reasoning. The following are two examples where, during the reasoning, the model believes the code is exploitable, but the final answer is ``no,'' and in the other example, it is the opposite.
 
 \begin{tcolorbox}[colback=white, colframe=black]
     \noindent

@@ -718,7 +718,7 @@ This chapter presented LLMAO, the first test-free fault localization technique u
 
 We evaluated LLMAO on three diverse benchmarks: 395 real bugs from Defects4J, 493 bugs from BugsInPy, and 5,260 security vulnerabilities from Devign. Our results demonstrate that LLMAO outperforms all prior state-of-the-art deep learning fault localization techniques across all three datasets. The key novelty lies in our bidirectional adapter architecture that enables discriminative tasks on causal language models, requiring only a few hundred training samples while leveraging the knowledge already encoded in pretrained LLMs.
 
-This work directly supports our thesis by demonstrating that augmenting LLMs with bidirectional understanding (i.e., a form of program analysis considering both prefix and suffix context) enables effective software maintenance tasks beyond code generation. The quantitative evidence shows that this hybrid approach consistently outperforms pure neural methods that lack holistic program understanding.
+This work directly supports my thesis by demonstrating that augmenting LLMs with bidirectional understanding (i.e., a form of program analysis considering both prefix and suffix context) enables effective software maintenance tasks beyond code generation. The quantitative evidence shows that this hybrid approach consistently outperforms pure neural methods that lack holistic program understanding.
 
 \chapter{Automated Program Repair}
 \label{ch:entropy}
@@ -1219,7 +1219,7 @@ This chapter presented the first use of LLM entropy as a program analysis signal
 
 We introduced entropy-delta, which measures the difference in entropy between a proposed patch and the original code, quantifying LLM uncertainty as a naturalness metric. Our evaluation on Defects4J demonstrates three key contributions: (1) entropy-delta saves an average of 24 test runs per bug for the template-based APR technique TBar, significantly improving repair efficiency; (2) entropy-based ranking improves Top-1 patch correctness by 49\% compared to state-of-the-art patch ranker Shibboleth (which achieved 66\% Top-1/Top-2 accuracy); and (3) entropy-based classification achieves 18\% higher precision than prior patch disambiguation tools.
 
-This work supports our thesis by demonstrating that LLM uncertainty serves as a valuable program analysis signal that complements traditional APR techniques. The quantitative evidence shows that this hybrid approach outperforms both pure symbolic methods (e.g., traditional APR) and pure neural methods (e.g., LLM-only patch generation), while avoiding training data leakage and model overfitting issues that plague learning-based techniques.
+This work supports my thesis by demonstrating that LLM uncertainty serves as a valuable program analysis signal that complements traditional APR techniques. The quantitative evidence shows that this hybrid approach outperforms both pure symbolic methods (e.g., traditional APR) and pure neural methods (e.g., LLM-only patch generation), while avoiding training data leakage and model overfitting issues that plague learning-based techniques.
 
 
 
@@ -1802,7 +1802,7 @@ This chapter presented VERT, the first verified Rust transpilation tool that com
 
 We evaluated VERT by transpiling 1,394 programs from C++, C, and Go to Rust. Using the Claude LLM with bounded model checking verification, VERT successfully verified 40\% more C++ programs, 37\% more C programs, and 47\% more Go programs compared to baseline approaches. This represents a significant improvement in achieving 100\% functional correctness while maintaining code idiomaticity, a combination that neither rule-based transpilers (which sacrifice idiomaticity) nor pure LLM approaches (which sacrifice correctness) achieve alone.
 
-This work supports our thesis by demonstrating that formal verification (i.e., a form of program analysis) is essential for LLM-based code transformation tasks. The quantitative evidence shows that this hybrid approach of combining neural generation with symbolic verification consistently outperforms pure neural or pure symbolic methods, establishing that program analysis augments LLM capabilities for software evolution tasks requiring correctness guarantees.
+This work supports my thesis by demonstrating that formal verification (i.e., a form of program analysis) is essential for LLM-based code transformation tasks. The quantitative evidence shows that this hybrid approach of combining neural generation with symbolic verification consistently outperforms pure neural or pure symbolic methods, establishing that program analysis augments LLM capabilities for software evolution tasks requiring correctness guarantees.
 
 
 \chapter{Security Vulnerability Detection with Self-Instruct LLM Finetuning}
@@ -2152,7 +2152,7 @@ This chapter presented MSIVD, the first multi-task self-instruction LLM fine-tun
 
 Our key novelty lies in three contributions: (1) self-instruct dialogue augmentation that transforms classification datasets into multi-round teacher-student conversations about vulnerability characteristics; (2) multi-task learning that jointly optimizes for detection and explanation, improving generalization compared to single-task approaches; and (3) lightweight GNN adapters that incorporate dataflow analysis from program call graphs, enabling simultaneous transfer learning between LLM and GNN components. We evaluated MSIVD on BigVul and PreciseBugs datasets, achieving state-of-the-art results.
 
-Critically, to address the risk of LLM data contamination identified in recent work, we collected a novel vulnerability dataset with samples exclusively filtered to vulnerabilities identified after our pretrained LLM's training cutoff. MSIVD outperforms prior work on this post-training-cutoff dataset, providing strong evidence that our approach generalizes beyond potentially contaminated training data. This work supports our thesis by demonstrating that program analysis (e.g., dataflow graphs via GNNs) augments LLM capabilities for complex, multi-file software maintenance tasks, with quantitative evidence showing hybrid approaches outperform pure neural or symbolic methods. 
+Critically, to address the risk of LLM data contamination identified in recent work, we collected a novel vulnerability dataset with samples exclusively filtered to vulnerabilities identified after our pretrained LLM's training cutoff. MSIVD outperforms prior work on this post-training-cutoff dataset, providing strong evidence that our approach generalizes beyond potentially contaminated training data. This work supports my thesis by demonstrating that program analysis (e.g., dataflow graphs via GNNs) augments LLM capabilities for complex, multi-file software maintenance tasks, with quantitative evidence showing hybrid approaches outperform pure neural or symbolic methods. 
 
 \chapter{Node.js Vulnerability Detection with Program Analysis and pretrained LLMs}
 \label{ch:nodejs}
@@ -2612,7 +2612,7 @@ This chapter presented NodeMedic-LLM, the first comprehensive evaluation of hybr
 
 We evaluated four distinct approaches on a large-scale dataset of 2,051 npm packages with human-reviewed labels for ACE and ACI vulnerabilities: (1) pure LLM-based methods without program analysis; (2) NodeMedic-ML using traditional ML models (Random Forest, XGBoost, Logistic Regression, SVM) on provenance graphs; (3) NodeMedic-GNN using graph neural networks on provenance graphs; and (4) NodeMedic-GNN-LLM combining GNN and LLM embeddings. Our results demonstrate that NodeMedic-GNN achieves an F1 score of 0.943, significantly outperforming both pure program analysis approaches and pure LLM methods.
 
-This work supports our thesis by demonstrating that dynamic program analysis (i.e., taint provenance graphs) provides essential semantic information that augments LLM capabilities for vulnerability detection. The quantitative evidence shows that this hybrid neural-symbolic approach consistently outperforms pure neural methods (LLMs alone) or pure symbolic methods (traditional program analysis), establishing that deeper forms of program analysis that track data transformations during execution complement LLM pattern recognition for complex software maintenance tasks.
+This work supports my thesis by demonstrating that dynamic program analysis (i.e., taint provenance graphs) provides essential semantic information that augments LLM capabilities for vulnerability detection. The quantitative evidence shows that this hybrid neural-symbolic approach consistently outperforms pure neural methods (LLMs alone) or pure symbolic methods (traditional program analysis), establishing that deeper forms of program analysis that track data transformations during execution complement LLM pattern recognition for complex software maintenance tasks.
 
 \input{conclusion}
 

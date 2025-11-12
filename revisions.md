@@ -6,7 +6,7 @@
 > Software engineering is an evolving process, including testing, debugging, and migration. Open-source, code assisting language models are commonly pre-trained on causal code generation (i.e., left-to-right). This limits their value in software maintenance and evolution tasks, which require a wholistic understanding of software properties. Adding an understanding of software properties through program analysis can assist in important steps of the software evolution process and mitigate the limitations of a language model.
 
 **Final (Updated):**
-> Software maintenance requires both pattern recognition and symbolic reasoning, capabilities that are complementary to one another. While Large Language Models excel at pattern recognition, they lack the semantic rigor for software understanding. Integrating LLMs with program analysis consistently outperforms either approach in isolation across common software engineering tasks in real-world repositories. Effective software engineering tools must therefore leverage both neural and symbolic paradigms to achieve the flexibility of learned representations and the correctness guarantees of formal reasoning.
+> Program analysis complements large language models (LLMs) for software maintenance by providing structured software signals that include bidirectional code context, formal verification of code properties, and dataflow properties. These signals can be integrated with LLMs beyond autoregressive generation. Explicitly integrating analysis-derived signals with LLMs consistently outperforms either pure learning-based or pure analysis-based approaches across key software engineering tasks in real-world repositories.
 
 ## Proposed Revised Thesis Statements
 
